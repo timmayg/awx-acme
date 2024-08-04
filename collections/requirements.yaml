@@ -3,4 +3,4 @@ collections:
   - name: community.crypto
   - name: cisco.ios
   - name: cisco.ise
-  - name: cisco.fmcansible.fmc_configuration
+#  - name: cisco.fmcansible.fmc_configuration
