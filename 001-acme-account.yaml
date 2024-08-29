@@ -2,15 +2,22 @@
 - name: Create a new ACME account with Let's Encrypt Staging
   hosts: localhost
   tasks:
+
+    - name: Generate an OpenSSL private key with the default values (4096 bits, RSA) and a passphrase
+      community.crypto.openssl_privatekey:
+        path: ~/awx-key.pem
+
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
     - name: Create ACME account
       community.crypto.acme_account:
-#        account_key_content: "{{ lookup('file', 'path/to/your/account.key') }}"
+        account_key_content: "{{ lookup('path/to/your/account.key') }}"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         state: present
         contact:
           - mailto:timmayglen@gmail.com
         terms_agreed: true
-        acme_version: 2
       register: acme_account
 
     - name: Display ACME account details
