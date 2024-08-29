@@ -1,0 +1,18 @@
+---
+- name: Create a new ACME account with Let's Encrypt Staging
+  hosts: localhost
+  tasks:
+    - name: Create ACME account
+      community.crypto.acme_account:
+#        account_key_content: "{{ lookup('file', 'path/to/your/account.key') }}"
+        acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+        state: present
+        contact:
+          - mailto:timmayglen@gmail.com
+        terms_agreed: true
+        acme_version: 2
+      register: acme_account
+
+    - name: Display ACME account details
+      ansible.builtin.debug:
+        var: acme_account
