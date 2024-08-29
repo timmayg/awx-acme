@@ -1,0 +1,12 @@
+---
+- name: Create a new ACME account with Let's Encrypt Staging
+  hosts: localhost
+  tasks:
+
+#
+#  This Task will create a 4096 bit key.
+#  Key will be stored in AWX home director.
+#
+    - name: Generate an OpenSSL private key with the default values (4096 bits, RSA) and a passphrase
+      community.crypto.openssl_privatekey:
+        path: ~/awx-key.pem
