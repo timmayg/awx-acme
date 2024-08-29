@@ -1,10 +1,11 @@
 ---
 - name: Create a new ACME account with Let's Encrypt Staging
   hosts: localhost
+  gather_facts: false
   tasks:
     - name: Create ACME account
       community.crypto.acme_account:
-        account_key_src: "{{ '~/awx.key' }}"
+        account_key_src: "{{ '~/awx-key.pem' }}"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
