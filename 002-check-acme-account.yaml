@@ -7,6 +7,8 @@
     - name: 01 - Check whether an account with the given account key exists
       community.crypto.acme_account_info:
         account_key_src: "~/le-account.key"
+        acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+        acme_version: 2
       register: account_data
 
     - name: 02 - Verify that account exists
