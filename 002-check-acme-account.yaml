@@ -4,38 +4,37 @@
   gather_facts: false
   tasks:
 
-    - name: Check whether an account with the given account key exists
+    - name: 01 - Check whether an account with the given account key exists
       community.crypto.acme_account_info:
         account_key_src: "~/le-account.key"
       register: account_data
 
-    - name: Verify that account exists
+    - name: 02 - Verify that account exists
       ansible.builtin.assert:
         that:
           - account_data.exists
 
-    - name: Print account URI
+    - name: 03 - Print account URI
       ansible.builtin.debug:
         var: account_data.account_uri
 
-    - name: Print account contacts
+    - name: 04 - Print account contacts
       ansible.builtin.debug:
         var: account_data.account.contact
 
-    - name: Check whether the account exists and is accessible with the given account key
+    - name: 05 - Check whether the account exists and is accessible with the given account key
       acme_account_info:
         account_key_content: "{{ acme_account_key }}"
         account_uri: "{{ acme_account_uri }}"
       register: account_data
 
-    - name: Verify that account exists
+    - name: 06 - Verify that account exists
       ansible.builtin.assert:
         that:
           - account_data.exists
 
-    - name: Print account contacts
+    - name: 07 - Print account contacts
       ansible.builtin.debug:
         var: account_data.account.contact
 
 
-        
