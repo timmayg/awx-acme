@@ -4,13 +4,16 @@
   gather_facts: false
 
   tasks:
+    - name: Generate an RSA Private Key
+      community.crypto.openssl_privatekey:
+        path: "/var/lib/awx/projects/local/private.key"
+
+    - name: Stop the playbook
+      meta: end_play
+
     - name: Ensure the local directory exists
       ansible.builtin.file:
         path: "/var/lib/awx/projects/local"
         state: directory
         mode: '0755'
-
-    - name: Generate an RSA Private Key
-      community.crypto.openssl_privatekey:
-        path: "/var/lib/awx/projects/local/private.key"
 
