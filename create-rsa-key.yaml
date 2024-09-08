@@ -9,9 +9,9 @@
         path: "~/private.key"
 
     - name: Extract public key
-      community.crypto.openssl_privatekey:
-        path: ~/private.key
-        dest: ~/public.key
+      community.crypto.openssl_publickey:
+        privatekey_path: ~/private.key
+        path: ~/public.key
 
     - name: Stop the playbook
       meta: end_play
