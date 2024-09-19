@@ -13,12 +13,25 @@
         privatekey_path: ~/private.key
         path: ~/public.key
 
+    - name: Write the Private Key to Vault
+      community.hashi_vault.vault_kv2_write:
+        url: "https://vault.theglens.net:8200"
+        mount_point: "kv"
+        path: "le_stage_key/private"
+        secret:
+          private_key: "{{ lookup('file', '~/private.key') }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+
+    - name: Write the Public Key to Vault
+      community.hashi_vault.vault_kv2_write:
+        url: "https://vault.theglens.net:8200"
+        mount_point: "kv"
+        path: "le_stage_key/public"
+        secret:
+          public_key: "{{ lookup('file', '~/public.key') }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+
     - name: Stop the playbook
       meta: end_play
-
-    - name: Ensure the local directory exists
-      ansible.builtin.file:
-        path: "/var/lib/awx/projects/local"
-        state: directory
-        mode: '0755'
-
