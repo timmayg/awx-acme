@@ -14,11 +14,14 @@
         url: "https://vault.theglens.net:8200"
         engine_mount_point: "kv"
         path: "le_stage_key/private"
-        secret:
+        data:
           private_key: "{{ lookup('file', '~/private.key') }}"
         auth_method: token
         token: "{{ ansible_password }}"
 
+    - name: Stop the playbook
+      ansible.builtin.meta: end_play
+ 
 
     - name: Extract public key
       community.crypto.openssl_publickey:
@@ -30,7 +33,7 @@
         url: "https://vault.theglens.net:8200"
         mount_point: "kv"
         path: "le_stage_key/public"
-        secret:
+        data:
           public_key: "{{ lookup('file', '~/public.key') }}"
         auth_method: token
         token: "{{ ansible_password }}"
