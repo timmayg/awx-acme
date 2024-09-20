@@ -13,7 +13,7 @@
       community.hashi_vault.vault_kv2_write:
         url: "https://vault.theglens.net:8200"
         engine_mount_point: "kv"
-        path: "le_stage_key/private"
+        path: "le_stage_key"
         data:
           private_key: "{{ lookup('file', '~/private.key') }}"
         auth_method: token
