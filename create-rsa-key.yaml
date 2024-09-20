@@ -7,7 +7,7 @@
     - name: Generate an RSA Private Key
       community.crypto.openssl_privatekey:
         path: "~/private.key"
-        size: 2048
+        size: 4096
 
     - name: Write the Private Key to Vault
       community.hashi_vault.vault_kv2_write:
