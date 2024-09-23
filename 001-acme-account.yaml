@@ -2,13 +2,13 @@
 - name: Create a new ACME account with Let's Encrypt Staging
   hosts: localhost
   gather_facts: false
+  vars: 
+   vault_url: "https://vault.theglens.net:8200"
+   vault_mount: "kv"
+   vault_secret: "le_stage_key/private_key"
 
   tasks:
     - name: Read The Let's Encrypt Private Key from Vault
-      vars: 
-        vault_url: "https://vault.theglens.net:8200"
-        vault_mount: "kv"
-        vault_secret: "le_stage_key/private_key"
       community.hashi_vault.vault_kv2_get:
         url: "{{ vault_url }}"
         engine_mount_point: "{{ vault_mount }}"
