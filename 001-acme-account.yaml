@@ -5,7 +5,7 @@
   vars: 
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "le_stage_key/public_key"
+   vault_secret: "le_stage_key/private_key"
 
   tasks:
     - name: Read The Let's Encrypt Private Key from Vault
