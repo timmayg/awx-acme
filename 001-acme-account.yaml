@@ -4,9 +4,30 @@
   gather_facts: false
 
   tasks:
-    - name: Generate an RSA Private Key
-      community.crypto.openssl_privatekey:
-        path: "~/le-account.key"
+    - name: Read The Let's Encrypt Private Key from Vault
+      vars: 
+        vault_url: "https://vault.theglens.net:8200"
+        vault_mount: "kv"
+        vault_secret: "le_stage_key/private_key"
+      community.hashi_vault.vault_kv2_get:
+        url: "{{ vault_url }}"
+        engine_mount_point: "{{ vault_mount }}"
+        path: "{{ vault_secret }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+      register: response
+
+    - name: Print the Private Key
+      ansible.builtin.debug:
+        msg: "{{ response.secret.private_key }}"
+
+
+
+
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
 
     - name: Create ACME account
       community.crypto.acme_account:
@@ -22,6 +43,3 @@
     - name: Display ACME account details
       ansible.builtin.debug:
         var: acme_account
-
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
