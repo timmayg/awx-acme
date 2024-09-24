@@ -4,9 +4,24 @@
   gather_facts: false
   tasks:
 
+    - name: Read The Let's Encrypt Private Key from Vault
+      community.hashi_vault.vault_kv2_get:
+        url: "{{ vault_url }}"
+        engine_mount_point: "{{ vault_mount }}"
+        path: "{{ vault_secret }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+      register: response
+
+    - name: Write the private key to a file
+      ansible.builtin.copy:
+        content: "{{ response.secret.private_key }}"
+        dest: "~/le_private_key.pem"
+        mode: '0600'
+
     - name: 01 - Check whether an account with the given account key exists
       community.crypto.acme_account_info:
-        account_key_src: "~/le-account.key"
+        account_key_src: "~/le_private_key.pem"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
       register: account_data
