@@ -20,19 +20,11 @@
     - name: Print the Private Key
       ansible.builtin.debug:
 #        msg: "{{ response.secret.public_key }}"
-        msg: "{{ response.secret.public_key }}"
-
-
-
-
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
+        msg: "{{ response.secret.private_key }}"
 
     - name: Create ACME account
       community.crypto.acme_account:
-        account_key_src: "~/le-account.key"
+        account_key_src: "{{ response.secret.private_key }}"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
@@ -44,3 +36,7 @@
     - name: Display ACME account details
       ansible.builtin.debug:
         var: acme_account
+
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
