@@ -19,7 +19,8 @@
 
     - name: Print the Private Key
       ansible.builtin.debug:
-        msg: "{{ response.secret.private_key }}"
+#        msg: "{{ response.secret.public_key }}"
+        msg: "{{ response.secret.public_key }}"
 
 
 
