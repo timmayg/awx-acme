@@ -17,14 +17,21 @@
         token: "{{ ansible_password }}"
       register: response
 
-    - name: Print the Private Key
-      ansible.builtin.debug:
+#    - name: Print the Private Key
+#      ansible.builtin.debug:
 #        msg: "{{ response.secret.public_key }}"
-        msg: "{{ response.secret.private_key }}"
+#        msg: "{{ response.secret.private_key }}"
+
+    - name: Write the private key to a file
+      ansible.builtin.copy:
+        content: "{{ response.secret.private_key }}"
+        dest: ~/private_key.pem
+        mode: '0600'
+
 
     - name: Create ACME account
       community.crypto.acme_account:
-        account_key_src: "{{ response.secret.private_key }}"
+        account_key_src: "~/private_key.pem"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
