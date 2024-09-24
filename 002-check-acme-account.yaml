@@ -2,6 +2,11 @@
 - name: Create a new ACME account with Let's Encrypt Staging
   hosts: localhost
   gather_facts: false
+  vars: 
+   vault_url: "https://vault.theglens.net:8200"
+   vault_mount: "kv"
+   vault_secret: "le_stage_key"
+   
   tasks:
 
     - name: Read The Let's Encrypt Private Key from Vault
