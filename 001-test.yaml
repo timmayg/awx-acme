@@ -14,3 +14,4 @@
         value: this-is-a-unique-value
         state: present
         zone: theglens.net
+      register: response
