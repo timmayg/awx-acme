@@ -8,8 +8,8 @@
       community.general.cloudflare_dns:
         account_api_key: "{{ ansible_password }}"
         account_email: "{{ ansible_user }}"
-        domain: theglens.net
-        record: test-ansible
+        zone: theglens.net
+        record: testansible
         # solo: true
         type: TXT
         value: this-is-a-unique-value
