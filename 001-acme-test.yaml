@@ -4,14 +4,6 @@
   gather_facts: false
   tasks:
 
-    - name: Query DNS for ssl-vpn.mydomain.com and store IP
-      ansible.builtin.command: "dig +short @1.1.1.1 ssl-vpn.mydomain.com"
-      register: vpn_ip_result
-
-    - name: Set the IP address to a variable
-      set_fact:
-        vpn_ip: "{{ vpn_ip_result.stdout }}"
-
 
     - name: Query DNS for ssl-vpn.mydomain.com and store IP using getent
       ansible.builtin.getent:
@@ -40,3 +32,11 @@
     - name: Display the public IP address of the network.
       ansible.builtin.debug:
         msg: "{{ public_ip.json.ip }}"
+
+    - name: Query DNS for ssl-vpn.mydomain.com and store IP
+      ansible.builtin.command: "dig +short @1.1.1.1 ssl-vpn.theglens.net"
+      register: vpn_ip_result
+
+    - name: Set the IP address to a variable
+      set_fact:
+        vpn_ip: "{{ vpn_ip_result.stdout }}"
