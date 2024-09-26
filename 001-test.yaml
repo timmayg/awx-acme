@@ -11,6 +11,6 @@
         type: TXT
         value: this-is-a-unique-value
         solo: true
-        account_email: "{{ansible_user}}"
-        account_api_key: "{{ansible_password}}"
+        account_email: "{{ ansible_user }}"
+        account_api_key: "{{ ansible_password }}"
         # state: present  
