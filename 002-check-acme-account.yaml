@@ -42,6 +42,4 @@
 
     - name: 06 - Print account contacts
       ansible.builtin.debug:
-        var: account_data.account.contacts
-
-
+        var: account_data.account.contact
