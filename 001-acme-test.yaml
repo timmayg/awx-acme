@@ -12,7 +12,7 @@
         record: testansible
         type: TXT
         value: this-is-a-unique-value
-        state: absent    # present (default), absent
+        state: present    # present (default), absent
         zone: theglens.net
       register: response
 
