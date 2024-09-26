@@ -3,9 +3,10 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Create TXT record "test.example.net" with value "unique value"
+
+    - name: Create TXT record with value "unique value"
       community.general.cloudflare_dns:
-        domain: timslab.fun
+        domain: theglens.net
         record: test-ansible
         type: TXT
         value: this-is-a-unique-value
