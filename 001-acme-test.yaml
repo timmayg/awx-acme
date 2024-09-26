@@ -18,6 +18,26 @@
       ansible.builtin.debug:
         msg: "{{ public_ip.json.ip }}"
 
+    - name: Query DNS for ssl-vpn.mydomain.com and store IP
+      ansible.builtin.command: "dig +short @1.1.1.1 ssl-vpn.mydomain.com"
+      register: vpn_ip_result
+
+    - name: Set the IP address to a variable
+      set_fact:
+        vpn_ip: "{{ vpn_ip_result.stdout }}"
+
+
+    - name: Query DNS for ssl-vpn.mydomain.com and store IP using getent
+      ansible.builtin.getent:
+        database: hosts
+        key: ssl-vpn.mydomain.com
+      register: vpn_ip_result
+
+    - name: Extract the IP address from the result
+      set_fact:
+        vpn_ip: "{{ vpn_ip_result.ssl-vpn.mydomain.com[0] }}"
+
+
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
