@@ -10,8 +10,8 @@
         api_token: "{{ ansible_password }}"
         account_email: "{{ ansible_user }}"
         record: testansible
-        type: A
-        value: 2.2.2.2
+        type: TXT
+        value: this-is-a-unique-value
         state: absent    # present (default), absent
         zone: theglens.net
       register: response
