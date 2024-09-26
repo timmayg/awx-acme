@@ -1,0 +1,17 @@
+---
+- name: Tasks in this Playbook are for testing purposes only
+  hosts: localhost
+  gather_facts: false
+  vars: 
+
+
+- name: Create TXT record "test.example.net" with value "unique value"
+  community.general.cloudflare_dns:
+    domain: timslab.fun
+    record: test-ansible
+    type: TXT
+    value: this-is-a-unique-value
+    solo: true
+    account_email: "{{ansible_user}}"
+    account_api_key: "{{ansible_password}}"
+#    state: present  
