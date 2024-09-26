@@ -4,20 +4,6 @@
   gather_facts: false
   tasks:
 
-    - name: Get the public IP address of the network.
-      ansible.builtin.uri:
-        url: https://api.ipify.org?format=json
-        method: Get
-      changed_when: false
-      register: public_ip
-      until: public_ip.status == 200
-      retries: 6
-      delay: 10
-
-    - name: Display the public IP address of the network.
-      ansible.builtin.debug:
-        msg: "{{ public_ip.json.ip }}"
-
     - name: Query DNS for ssl-vpn.mydomain.com and store IP
       ansible.builtin.command: "dig +short @1.1.1.1 ssl-vpn.mydomain.com"
       register: vpn_ip_result
@@ -41,3 +27,16 @@
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
+    - name: Get the public IP address of the network.
+      ansible.builtin.uri:
+        url: https://api.ipify.org?format=json
+        method: Get
+      changed_when: false
+      register: public_ip
+      until: public_ip.status == 200
+      retries: 6
+      delay: 10
+
+    - name: Display the public IP address of the network.
+      ansible.builtin.debug:
+        msg: "{{ public_ip.json.ip }}"
