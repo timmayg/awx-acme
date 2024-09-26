@@ -8,10 +8,24 @@
       community.general.cloudflare_dns:
         account_api_key: "{{ ansible_password }}"
         account_email: "{{ ansible_user }}"
-        domain: theglens.net
         record: testansible
         type: A
         value: 2.2.2.2
         state: present
         zone: theglens.net
       register: response
+
+    - name: Debug response
+      debug:
+        var: response
+
+    - name: Debug task parameters
+      debug:
+        msg:
+          - "account_api_key: {{ ansible_password }}"
+          - "account_email: {{ ansible_user }}"
+          - "record: testansible"
+          - "type: A"
+          - "value: 2.2.2.2"
+          - "state: present"
+          - "zone: theglens.net"
