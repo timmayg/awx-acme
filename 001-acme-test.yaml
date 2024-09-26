@@ -4,12 +4,12 @@
   gather_facts: false
   tasks:
 
-    - name: Query DNS for FQDN record
-      ansible.builtin.dig:
-        server: "1.1.1.1"  # DNS server to query (e.g., Google's DNS)
-        query: "ssl-vpn.theglens.net"  # The FQDN to look up
-        type: "A"  # The type of DNS record (A, AAAA, CNAME, etc.)
+    - name: Query DNS for FQDN record using Ansible native method
+      community.general.dns_lookup:
+        name: ssl-vpn.theglens.net  # Replace with your FQDN
+        type: A  # Specify the type of record, e.g., A, AAAA, CNAME, etc.
       register: dns_result
+
 
     - name: Display the DNS query result
       ansible.builtin.debug:
