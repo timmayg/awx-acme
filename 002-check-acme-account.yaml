@@ -2,44 +2,45 @@
 - name: Check that an ACME account Exists with ACME Server
   hosts: localhost
   gather_facts: false
-  vars: 
+  vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
    vault_secret: "le_stage_key"
 
   tasks:
 
-    - name: 01 - Read The Let's Encrypt Private Key from Vault
-      community.hashi_vault.vault_kv2_get:
-        url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "{{ vault_secret }}"
-        auth_method: token
-        token: "{{ ansible_password }}"
-      register: response
+   - name: 01 - Read The Let's Encrypt Private Key from Vault
+     community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: "{{ vault_mount }}"
+      path: "{{ vault_secret }}"
+      auth_method: token
+      token: "{{ ansible_password }}"
+     register: response
 
-    - name: 02 - Write the private key to a file
-      ansible.builtin.copy:
-        content: "{{ response.secret.private_key }}"
-        dest: "~/le_private_key.pem"
-        mode: '0600'
+   - name: 02 - Write the private key to a file
+     ansible.builtin.copy:
+      content: "{{ response.secret.private_key }}"
+      dest: "~/le_private_key.pem"
+      mode: '0600'
 
-    - name: 03 - Check whether an account with the given account key exists
-      community.crypto.acme_account_info:
-        account_key_src: "~/le_private_key.pem"
-        acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
-        acme_version: 2
-      register: account_data
+   - name: 03 - Check whether an account with the given account key exists
+     community.crypto.acme_account_info:
+      account_key_src: "~/le_private_key.pem"
+      acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+      acme_version: 2
+     register: account_data
 
-    - name: 04 - Verify that account exists
-      ansible.builtin.assert:
-        that:
-          - account_data.exists
+   - name: 04 - Verify that account exists
+     ansible.builtin.assert:
+      that:
+       - account_data.exists
 
-    - name: 05 - Print account URI
-      ansible.builtin.debug:
-        var: account_data.account_uri
+   - name: 05 - Print account URI
+     ansible.builtin.debug:
+      var: account_data.account_uri
 
-    - name: 06 - Print account contacts
-      ansible.builtin.debug:
-        var: account_data.account.contact
+   - name: 06 - Print account contacts
+     ansible.builtin.debug:
+      var: account_data.account.contact
+       
