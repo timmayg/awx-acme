@@ -4,6 +4,11 @@
   gather_facts: false
   tasks:
 
+    - name: Look up A (IPv4) records for example.org
+      ansible.builtin.debug:
+        msg: "{{ query('community.dns.lookup', 'ssl-vpn.theglens.net') }}"
+
+
     - name: Query DNS for FQDN record using Ansible native method
       community.general.dns_lookup:
         name: ssl-vpn.theglens.net  # Replace with your FQDN
