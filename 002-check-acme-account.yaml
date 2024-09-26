@@ -1,15 +1,15 @@
 ---
-- name: Create a new ACME account with Let's Encrypt Staging
+- name: Check that an ACME account Exists with ACME Server
   hosts: localhost
   gather_facts: false
   vars: 
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
    vault_secret: "le_stage_key"
-   
+
   tasks:
 
-    - name: Read The Let's Encrypt Private Key from Vault
+    - name: 01 - Read The Let's Encrypt Private Key from Vault
       community.hashi_vault.vault_kv2_get:
         url: "{{ vault_url }}"
         engine_mount_point: "{{ vault_mount }}"
@@ -18,45 +18,30 @@
         token: "{{ ansible_password }}"
       register: response
 
-    - name: Write the private key to a file
+    - name: 02 - Write the private key to a file
       ansible.builtin.copy:
         content: "{{ response.secret.private_key }}"
         dest: "~/le_private_key.pem"
         mode: '0600'
 
-    - name: 01 - Check whether an account with the given account key exists
+    - name: 03 - Check whether an account with the given account key exists
       community.crypto.acme_account_info:
         account_key_src: "~/le_private_key.pem"
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
       register: account_data
 
-    - name: 02 - Verify that account exists
+    - name: 04 - Verify that account exists
       ansible.builtin.assert:
         that:
           - account_data.exists
 
-    - name: 03 - Print account URI
+    - name: 05 - Print account URI
       ansible.builtin.debug:
         var: account_data.account_uri
 
-    - name: 04 - Print account contacts
+    - name: 06 - Print account contacts
       ansible.builtin.debug:
-        var: account_data.account.contact
-
-    - name: 05 - Check whether the account exists and is accessible with the given account key
-      acme_account_info:
-        account_key_content: "{{ acme_account_key }}"
-        account_uri: "{{ acme_account_uri }}"
-      register: account_data
-
-    - name: 06 - Verify that account exists
-      ansible.builtin.assert:
-        that:
-          - account_data.exists
-
-    - name: 07 - Print account contacts
-      ansible.builtin.debug:
-        var: account_data.account.contact
+        var: account_data.account.contacts
 
 
