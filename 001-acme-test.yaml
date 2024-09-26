@@ -12,7 +12,7 @@
         record: testansible
         type: A
         value: 2.2.2.2
-        state: present
+        state: absent    # present (default), absent
         zone: theglens.net
       register: response
 
