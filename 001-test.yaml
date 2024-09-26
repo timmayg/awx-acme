@@ -10,8 +10,8 @@
         account_email: "{{ ansible_user }}"
         domain: theglens.net
         record: testansible
-        type: TXT
-        value: this-is-a-unique-value
+        type: A
+        value: 2.2.2.2
         state: present
         zone: theglens.net
       register: response
