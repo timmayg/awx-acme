@@ -5,7 +5,7 @@
   tasks:
 
     - name: Get the public IP address of the network.
-      uri:
+      ansible.builtin.uri:
         url: https://api.ipify.org?format=json
         method: Get
       changed_when: false
@@ -15,8 +15,8 @@
       delay: 10
 
     - name: Display the public IP address of the network.
-      debug:
-        msg: "{{ public_ip.json.ip }}
+      ansible.builtin.debug:
+        msg: "{{ public_ip.json.ip }}"
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
