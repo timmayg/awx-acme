@@ -10,7 +10,7 @@
         account_email: "{{ ansible_user }}"
         domain: theglens.net
         record: test-ansible
-        #solo: true
+        # solo: true
         type: TXT
         value: this-is-a-unique-value
-        # state: present  
+        state: present   # Values: present (default), absent
