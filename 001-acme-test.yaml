@@ -6,7 +6,8 @@
 
     - name: Create TXT record with value "unique value"
       community.general.cloudflare_dns:
-        account_api_key: "{{ ansible_password }}"
+#        account_api_key: "{{ ansible_password }}"
+        api_token: "{{ ansible_password }}"
         account_email: "{{ ansible_user }}"
         record: testansible
         type: A
