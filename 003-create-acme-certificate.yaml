@@ -4,8 +4,6 @@
   gather_facts: false
   tasks:
 
-
-
     - name: Create TXT record with value "unique value"
       community.general.cloudflare_dns:
         api_token: "{{ ansible_password }}"
@@ -15,8 +13,6 @@
         state: present    # present (default), absent
         zone: theglens.net
       register: response
-
-
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
