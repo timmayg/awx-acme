@@ -20,15 +20,3 @@
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
-
-
-    - name: Create TXT record with value "unique value"
-      community.general.cloudflare_dns:
-        api_token: "{{ ansible_password }}"
-        account_email: "{{ ansible_user }}"
-        record: testansible
-        type: TXT
-        value: this-is-a-unique-value
-        state: present    # present (default), absent
-        zone: theglens.net
-      register: response
