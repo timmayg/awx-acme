@@ -4,8 +4,6 @@
   gather_facts: false
   tasks:
 
-
-
     - name: Get the public IP address of the network.
       uri:
         url: https://api.ipify.org?format=json
@@ -24,31 +22,3 @@
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
-
-
-    - name: Create TXT record with value "unique value"
-      community.general.cloudflare_dns:
-#        account_api_key: "{{ ansible_password }}"
-        api_token: "{{ ansible_password }}"
-        account_email: "{{ ansible_user }}"
-        record: testansible
-        type: TXT
-        value: this-is-a-unique-value
-        state: present    # present (default), absent
-        zone: theglens.net
-      register: response
-
-    - name: Debug response
-      debug:
-        var: response
-
-    - name: Debug task parameters
-      debug:
-        msg:
-          - "account_api_key: {{ ansible_password }}"
-          - "account_email: {{ ansible_user }}"
-          - "record: testansible"
-          - "type: A"
-          - "value: 2.2.2.2"
-          - "state: present"
-          - "zone: theglens.net"
