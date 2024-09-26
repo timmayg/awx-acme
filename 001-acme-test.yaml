@@ -4,17 +4,16 @@
   gather_facts: false
   tasks:
 
+    - name: Query DNS for FQDN record
+      ansible.builtin.dig:
+        server: "1.1.1.1"  # DNS server to query (e.g., Google's DNS)
+        query: "ssl-vpn.theglens.net"  # The FQDN to look up
+        type: "A"  # The type of DNS record (A, AAAA, CNAME, etc.)
+      register: dns_result
 
-    - name: Query DNS for ssl-vpn.mydomain.com and store IP using getent
-      ansible.builtin.getent:
-        database: hosts
-        key: ssl-vpn.mydomain.com
-      register: vpn_ip_result
-
-    - name: Extract the IP address from the result
-      set_fact:
-        vpn_ip: "{{ vpn_ip_result.ssl-vpn.mydomain.com[0] }}"
-
+    - name: Display the DNS query result
+      ansible.builtin.debug:
+        msg: "{{ dns_result }}"
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
