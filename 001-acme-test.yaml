@@ -2,7 +2,20 @@
 - name: Tasks in this Playbook are for testing purposes only
   hosts: localhost
   gather_facts: false
+  vars:
+   vault_url: "https://vault.theglens.net:8200"
+   vault_mount: "kv"
+   vault_secret: "homenet_inet_ip"
+
   tasks:
+   - name: 01 - Read The Homenet Inet IP from Vault
+     community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: "{{ vault_mount }}"
+      path: "{{ vault_secret }}"
+      auth_method: token
+      token: "{{ ansible_password }}"
+     register: vault_homenet_inet_ip
 
     - name: Query Google DNS for ssl-vpn.theglens.net
       ansible.builtin.uri:
