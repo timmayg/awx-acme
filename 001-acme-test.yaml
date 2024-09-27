@@ -8,14 +8,14 @@
    vault_secret: "homenet_inet_ip"
 
   tasks:
-   - name: 01 - Read The Homenet Inet IP from Vault
-     community.hashi_vault.vault_kv2_get:
-      url: "{{ vault_url }}"
-      engine_mount_point: "{{ vault_mount }}"
-      path: "{{ vault_secret }}"
-      auth_method: token
-      token: "{{ ansible_password }}"
-     register: vault_homenet_inet_ip
+    - name: 01 - Read The Homenet Inet IP from Vault
+      community.hashi_vault.vault_kv2_get:
+        url: "{{ vault_url }}"
+        engine_mount_point: "{{ vault_mount }}"
+        path: "{{ vault_secret }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+      register: vault_homenet_inet_ip
 
     - name: Query Google DNS for ssl-vpn.theglens.net
       ansible.builtin.uri:
