@@ -11,13 +11,14 @@
         return_content: true
       register: dns_result
 
-    - name: Set the IP address from DNS response as a fact
+    - name: Parse the DNS response and set the IP address as a fact
       ansible.builtin.set_fact:
-        ip_address: "{{ dns_result.content.Answer[0].data }}"
+        ip_address: "{{ (dns_result.content | from_json).Answer[0].data }}"
 
     - name: Print the extracted IP address
       ansible.builtin.debug:
         var: ip_address
+
 
 
     - name: Timmay HARD STOP this Playbook
