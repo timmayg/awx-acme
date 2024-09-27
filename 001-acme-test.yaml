@@ -13,7 +13,7 @@
 
     - name: Print the geolocation result
       ansible.builtin.debug:
-        var: dns_result.content.answer
+        var: dns_result.content
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
