@@ -8,7 +8,7 @@
       ansible.builtin.uri:
         url: "https://api.ipgeolocation.io/ipgeo?apiKey={{ ansible_password }}&ip=ssl-vpn.theglens.net"
         method: GET
-        return_content: yes
+        return_content: true
       register: ip_geo_result
 
     - name: Print the geolocation result
@@ -18,42 +18,3 @@
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
-
-    - name: Look up A (IPv4) records for example.org
-      ansible.builtin.debug:
-        msg: "{{ query('community.dns.lookup', 'ssl-vpn.theglens.net') }}"
-
-
-    - name: Query DNS for FQDN record using Ansible native method
-      community.general.dns_lookup:
-        name: ssl-vpn.theglens.net  
-        type: A  
-      register: dns_result
-
-
-    - name: Display the DNS query result
-      ansible.builtin.debug:
-        msg: "{{ dns_result }}"
-
-
-    - name: Get the public IP address of the network.
-      ansible.builtin.uri:
-        url: https://api.ipify.org?format=json
-        method: Get
-      changed_when: false
-      register: public_ip
-      until: public_ip.status == 200
-      retries: 6
-      delay: 10
-
-    - name: Display the public IP address of the network.
-      ansible.builtin.debug:
-        msg: "{{ public_ip.json.ip }}"
-
-    - name: Query DNS for ssl-vpn.mydomain.com and store IP
-      ansible.builtin.command: "dig +short @1.1.1.1 ssl-vpn.theglens.net"
-      register: vpn_ip_result
-
-    - name: Set the IP address to a variable
-      set_fact:
-        vpn_ip: "{{ vpn_ip_result.stdout }}"
