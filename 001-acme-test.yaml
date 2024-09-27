@@ -4,16 +4,21 @@
   gather_facts: false
   tasks:
 
-    - name: Query IP geolocation API using ansible.builtin.uri
+    - name: Query Google DNS for ssl-vpn.theglens.net
       ansible.builtin.uri:
         url: "https://dns.google/resolve?name=ssl-vpn.theglens.net&type=a&do=1"
         method: GET
         return_content: true
       register: dns_result
 
-    - name: Print the geolocation result
+    - name: Set the IP address from DNS response as a fact
+      ansible.builtin.set_fact:
+        ip_address: "{{ dns_result.content.Answer[0].data }}"
+
+    - name: Print the extracted IP address
       ansible.builtin.debug:
-        var: dns_result.content
+        var: ip_address
+
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
