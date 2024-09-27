@@ -17,6 +17,10 @@
         token: "{{ ansible_password }}"
       register: vault_homenet_inet_ip
 
+    - name: Print the extracted IP address
+      ansible.builtin.debug:
+        var: vault_homenet_inet_ip
+
     - name: Query Google DNS for ssl-vpn.theglens.net
       ansible.builtin.uri:
         url: "https://dns.google/resolve?name=ssl-vpn.theglens.net&type=a&do=1"
