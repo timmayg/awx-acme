@@ -8,36 +8,45 @@
    vault_secret: "homenet_inet_ip"
 
   tasks:
-    - name: 01 - Read The Homenet Inet IP from Vault
-      community.hashi_vault.vault_kv2_get:
-        url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "{{ vault_secret }}"
-        auth_method: token
-        token: "{{ ansible_password }}"
-      register: vault_homenet_inet_ip
+   - name: 01 - Read The Homenet Inet IP from Vault
+     community.hashi_vault.vault_kv2_get:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: "{{ vault_secret }}"
+       auth_method: token
+       token: "{{ ansible_password }}"
+     register: vault_homenet_inet_ip
 
-    - name: Print the extracted IP address
-      ansible.builtin.debug:
-        var: vault_homenet_inet_ip
+#   - name: Print the Entire Response Homenet Inet IP from Vault
+#     ansible.builtin.debug:
+#       var: vault_homenet_inet_ip
 
-    - name: Query Google DNS for ssl-vpn.theglens.net
-      ansible.builtin.uri:
-        url: "https://dns.google/resolve?name=ssl-vpn.theglens.net&type=a&do=1"
-        method: GET
-        return_content: true
-      register: dns_result
+   - name: 02 - Set the IP address as a fact
+     ansible.builtin.set_fact:
+       registered_ip_address: "{{ vault_response.vault_homenet_inet_ip.raw.data.data.ip_addr }}"
+     when: vault_response.vault_homenet_inet_ip is defined
 
-    - name: Parse the DNS response and set the IP address as a fact
-      ansible.builtin.set_fact:
-        ip_address: "{{ (dns_result.content | from_json).Answer[0].data }}"
-
-    - name: Print the extracted IP address
-      ansible.builtin.debug:
-        var: ip_address
+   - name: Print 
+     ansible.builtin.debug:
+       var: registered_ip_address
 
 
+   - name: Query Google DNS for FQDN ssl-vpn.theglens.net
+     ansible.builtin.uri:
+       url: "https://dns.google/resolve?name=ssl-vpn.theglens.net&type=a&do=1"
+       method: GET
+       return_content: true
+     register: dns_result
 
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
+   - name: Parse the DNS response and set the IP address as a fact
+     ansible.builtin.set_fact:
+       ip_address: "{{ (dns_result.content | from_json).Answer[0].data }}"
+
+   - name: Print the extracted IP address
+     ansible.builtin.debug:
+       var: fqdn_ip_address
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
 
