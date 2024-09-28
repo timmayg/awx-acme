@@ -42,21 +42,40 @@
 
 
 
-   - name: Check if IP addresses are the same
-     ansible.builtin.debug:
-       msg: "Old and current IP addresses are the same. Stopping execution."
-     when: public_ip == vault_ip_address
-     register: check_ip_result
+#   - name: Check if IP addresses are the same
+#     ansible.builtin.debug:
+#       msg: "Old and current IP addresses are the same. Stopping execution."
+#     when: public_ip == vault_ip_address
+#     register: check_ip_result
 
    - name: Stop execution if IPs are the same
      ansible.builtin.meta: end_play
      when: public_ip == vault_ip_address
 
-   - name: Proceed with tasks if IPs are different
-     ansible.builtin.debug:
-       msg: "Old IP: {{ public_ip }}; Current IP: {{ vault_ip_address }}. Continuing with tasks."
-     when: public_ip != vault_ip_address
+#   - name: Proceed with tasks if IPs are different
+#     ansible.builtin.debug:
+#       msg: "Old IP: {{ public_ip }}; Current IP: {{ vault_ip_address }}. Continuing with tasks."
+#     when: public_ip != vault_ip_address
 
+
+   - name: 01 - Read Cloudflare API Token from Vault
+     community.hashi_vault.vault_kv2_get:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: cloudflare_token
+       auth_method: token
+       token: "{{ ansible_password }}"
+     register: cloudflare_token
+
+   - name: Update A record with New IP address
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token }}"
+       record: ssl-vpn
+       type: A
+       value: "{{ public_ip }}"
+       state: present    # present (default), absent
+       zone: theglens.net
+     register: response
 
 
 
