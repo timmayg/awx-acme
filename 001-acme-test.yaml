@@ -20,8 +20,8 @@
 
    - name: Print using msg
      ansible.builtin.debug:
-#       msg: "{{ public_ip.json.ip }}"
-      msg: "{{ public_ip }}"
+       msg: "{{ public_ip.json.ip }}"
+#      msg: "{{ public_ip }}"
 
    - name: 01 - Read The Homenet Inet IP from Vault
      community.hashi_vault.vault_kv2_get:
@@ -50,7 +50,7 @@
 
    - name: Stop execution if IPs are the same
      ansible.builtin.meta: end_play
-     when: public_ip == vault_ip_address
+     when: public_ip.json.ip == vault_ip_address
 
 #   - name: Proceed with tasks if IPs are different
 #     ansible.builtin.debug:
