@@ -18,10 +18,10 @@
      retries: 6
      delay: 10
 
-   - name: Display the ipify IP address
+   - name: Print using msg
      ansible.builtin.debug:
 #       msg: "{{ public_ip.json.ip }}"
-       msg: "{{ public_ip }}"
+      msg: "{{ public_ip }}"
 
    - name: 01 - Read The Homenet Inet IP from Vault
      community.hashi_vault.vault_kv2_get:
@@ -34,11 +34,44 @@
 
    - name: 02 - Set the IP address as a fact
      ansible.builtin.set_fact:
-       old_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
+      vault_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
 
-   - name: Print 
+   - name: Print using a var
      ansible.builtin.debug:
-       var: old_ip_address
+      var: vault_ip_address
+
+
+
+   - name: Check if IP addresses are the same
+     ansible.builtin.debug:
+       msg: "Old and current IP addresses are the same. Stopping execution."
+     when: public_ip == vault_ip_address
+     register: check_ip_result
+
+   - name: Stop execution if IPs are the same
+     ansible.builtin.meta: end_play
+     when: public_ip == vault_ip_address
+
+   - name: Proceed with tasks if IPs are different
+     ansible.builtin.debug:
+       msg: "Old IP: {{ public_ip }}; Current IP: {{ vault_ip_address }}. Continuing with tasks."
+     when: public_ip != vault_ip_address
+
+
+
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
+
+
+
+
+
+
 
    - name: Query Google DNS for FQDN ssl-vpn.theglens.net
      ansible.builtin.uri:
@@ -55,23 +88,4 @@
      ansible.builtin.debug:
        var: current_ip_address
 
-
-   - name: Check if IP addresses are the same
-     ansible.builtin.debug:
-        msg: "Old and current IP addresses are the same. Stopping execution."
-     when: old_ip_address == current_ip_address
-     register: check_ip_result
-
-   - name: Stop execution if IPs are the same
-     ansible.builtin.meta: end_play
-     when: old_ip_address == current_ip_address
-
-   - name: Proceed with tasks if IPs are different
-     ansible.builtin.debug:
-       msg: "Old IP: {{ old_ip_address }}; Current IP: {{ current_ip_address }}. Continuing with tasks."
-     when: old_ip_address != current_ip_address
-
-
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
 
