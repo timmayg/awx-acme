@@ -58,8 +58,8 @@
    - name: Check if IP addresses are the same
      ansible.builtin.debug:
         msg: "Old and current IP addresses are the same. Stopping execution."
-      when: old_ip_address == current_ip_address
-      register: check_ip_result
+     when: old_ip_address == current_ip_address
+     register: check_ip_result
 
    - name: Stop execution if IPs are the same
      ansible.builtin.meta: end_play
