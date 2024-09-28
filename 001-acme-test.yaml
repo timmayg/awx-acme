@@ -23,8 +23,7 @@
 
    - name: 02 - Set the IP address as a fact
      ansible.builtin.set_fact:
-       registered_ip_address: "{{ vault_response.vault_homenet_inet_ip.raw.data.data.ip_addr }}"
-     when: vault_response.vault_homenet_inet_ip is defined
+       registered_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
 
    - name: Print 
      ansible.builtin.debug:
