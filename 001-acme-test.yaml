@@ -72,6 +72,26 @@
 #      var: cloudflare_token.data.data.api_key
 
 
+
+
+
+
+   - name: Update A record with New IP address
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.data.data.api_key }}"
+       record: ssl-vpn
+       type: A
+       value: "{{ public_ip }}"
+       state: present    # present (default), absent
+       zone: theglens.net
+     register: response
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
    - name: Delete A record with Old IP address
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
@@ -80,28 +100,6 @@
        state: absent   # present (default), absent
        zone: theglens.net
      register: response
-
-
-
-
-
-
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
-
-
-   - name: Update A record with New IP address
-     community.general.cloudflare_dns:
-       account_api_key: "{{ cloudflare_token }}"
-       #api_token: "{{ cloudflare_token }}"
-       account_email: "timmayglen@gmail.com"
-       record: ssl-vpn
-       type: A
-       value: "{{ public_ip }}"
-       state: present    # present (default), absent
-       zone: theglens.net
-     register: response
-
 
 
 
