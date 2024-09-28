@@ -17,20 +17,26 @@
       token: "{{ ansible_password }}"
      register: response
 
-   - name: Print 
-     ansible.builtin.debug:
-       msg: "{{ response.secret.public_key }}"
+#   - name: Print 
+#     ansible.builtin.debug:
+#       msg: "{{ response.secret.public_key }}"
 #       msg: "{{ response.secret.private_key }}"
+
+
+   - name: Generate an OpenSSL Certificate Signing Request
+     community.crypto.openssl_csr:
+       path: ~/test-csr.theglens.net.csr
+       privatekey_content: {{ response.secret.private_key }}
+       common_name: test-csr.theglens.net
+
+
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
 
 
 
-
-   - name: Generate an OpenSSL Certificate Signing Request
-     community.crypto.openssl_csr:
-       path: /etc/ssl/csr/www.ansible.com.csr
-       privatekey_path: /etc/ssl/private/ansible.com.pem
-       common_name: test-csr.theglens.net
-
+#   - name: Print 
+#     ansible.builtin.debug:
+#       msg: "{{ response.secret.public_key }}"
+#       msg: "{{ response.secret.private_key }}"
