@@ -88,7 +88,7 @@
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: ssl-vpn
        type: A
-       value: "{{ public_ip }}"
+       value: "{{ public_ip.json.ip }}"
        state: present    # present (default), absent
        zone: theglens.net
      register: response
