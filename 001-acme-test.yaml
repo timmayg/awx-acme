@@ -69,7 +69,7 @@
 
    - name: Print using a var
      ansible.builtin.debug:
-      var: cloudflare_token
+      var: cloudflare_token.data.data.api_key
 
 
    - name: Delete A record with Old IP address
