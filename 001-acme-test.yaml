@@ -17,18 +17,9 @@
        token: "{{ ansible_password }}"
      register: vault_homenet_inet_ip
 
-#   - name: Print the Entire Response Homenet Inet IP from Vault
-#     ansible.builtin.debug:
-#       var: vault_homenet_inet_ip
-
    - name: 02 - Set the IP address as a fact
      ansible.builtin.set_fact:
        registered_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
-
-   - name: Print 
-     ansible.builtin.debug:
-       var: registered_ip_address
-
 
    - name: Query Google DNS for FQDN ssl-vpn.theglens.net
      ansible.builtin.uri:
@@ -41,9 +32,9 @@
      ansible.builtin.set_fact:
        ip_address: "{{ (dns_result.content | from_json).Answer[0].data }}"
 
-   - name: Print the extracted IP address
+   - name: Print 
      ansible.builtin.debug:
-       var: fqdn_ip_address
+       var: ip_address
 
 
    - name: Timmay HARD STOP this Playbook
