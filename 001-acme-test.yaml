@@ -8,7 +8,7 @@
    vault_secret: "homenet_inet_ip"
 
   tasks:
-   - name: Get the public IP address of the network
+   - name: 01- Get the public IP address
      ansible.builtin.uri:
        url: https://api.ipify.org?format=json
        method: Get
@@ -18,12 +18,12 @@
      retries: 6
      delay: 10
 
-   - name: Print using msg
-     ansible.builtin.debug:
-       msg: "{{ public_ip.json.ip }}"
+#   - name: Print using msg
+#     ansible.builtin.debug:
+#       msg: "{{ public_ip.json.ip }}"
 #      msg: "{{ public_ip }}"
 
-   - name: 01 - Read The Homenet Inet IP from Vault
+   - name: 02 - Read The Homenet Inet IP from Vault
      community.hashi_vault.vault_kv2_get:
        url: "{{ vault_url }}"
        engine_mount_point: "{{ vault_mount }}"
@@ -32,13 +32,13 @@
        token: "{{ ansible_password }}"
      register: vault_homenet_inet_ip
 
-   - name: 02 - Set the IP address as a fact
-     ansible.builtin.set_fact:
-      vault_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
+#   - name: 01 - Set the IP address as a fact
+#     ansible.builtin.set_fact:
+#      vault_ip_address: "{{ vault_homenet_inet_ip.raw.data.data.ip_addr }}"
 
-   - name: Print using a var
-     ansible.builtin.debug:
-      var: vault_ip_address
+#   - name: Print using a var
+#     ansible.builtin.debug:
+#      var: vault_ip_address
 
 
 
@@ -48,9 +48,9 @@
 #     when: public_ip == vault_ip_address
 #     register: check_ip_result
 
-   - name: Stop execution if IPs are the same
+   - name: 03 - Stop execution if IPs are the same
      ansible.builtin.meta: end_play
-     when: public_ip.json.ip == vault_ip_address
+     when: public_ip.json.ip == vault_homenet_inet_ip.raw.data.data.ip_addr
 
 #   - name: Proceed with tasks if IPs are different
 #     ansible.builtin.debug:
@@ -58,7 +58,7 @@
 #     when: public_ip != vault_ip_address
 
 
-   - name: 01 - Read Cloudflare API Token from Vault
+   - name: 04 - Read Cloudflare API Token from Vault
      community.hashi_vault.vault_kv2_get:
        url: "{{ vault_url }}"
        engine_mount_point: "{{ vault_mount }}"
@@ -73,7 +73,7 @@
 
 
 
-   - name: Delete A record with Old IP address
+   - name: 05 - Delete A record with Old IP address
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: ssl-vpn
@@ -83,16 +83,16 @@
      register: response
 
 
-   - name: Print using a var
-     ansible.builtin.debug:
-      var: public_ip
+#   - name: Print using a var
+#     ansible.builtin.debug:
+#      var: public_ip
 
-   - name: Print using a var
-     ansible.builtin.debug:
-      var: public_ip.json.ip
+#   - name: Print using a var
+#     ansible.builtin.debug:
+#      var: public_ip.json.ip
 
 
-   - name: Create A record with New IP address
+   - name: 06 - Create A record with New IP address
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: ssl-vpn
@@ -102,7 +102,7 @@
        zone: theglens.net
      register: response
 
-   - name: Create a new Path and two new key-value pairs in the KV2 engine
+   - name: 07 - Create a new Path and two new key-value pairs in the KV2 engine
      community.hashi_vault.vault_kv2_write:
        url: "https://vault.theglens.net:8200"
        path: "{{ vault_secret }}"
