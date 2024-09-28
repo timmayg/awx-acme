@@ -70,8 +70,8 @@
 
    - name: Print the DNS-01 resource value
      ansible.builtin.debug:
-#        msg: "{{ cha }}"
-       msg: "{{ ['challenge_response']['challenge_data_dns'] }}"
+#       msg: "{{ ['challenge_response']['msg']['challenge_data_dns'] }}"
+       msg: "{{ challenge_response.msg.challenge_data_dns }}"
 
 
    - name: Timmay HARD STOP this Playbook
