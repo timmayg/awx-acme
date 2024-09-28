@@ -42,19 +42,19 @@
 
 
    - name: Check if IP addresses are the same
-      ansible.builtin.debug:
+     ansible.builtin.debug:
         msg: "Old and current IP addresses are the same. Stopping execution."
       when: old_ip_address == current_ip_address
       register: check_ip_result
 
-    - name: Stop execution if IPs are the same
-      ansible.builtin.meta: end_play
-      when: old_ip_address == current_ip_address
+   - name: Stop execution if IPs are the same
+     ansible.builtin.meta: end_play
+     when: old_ip_address == current_ip_address
 
-    - name: Proceed with tasks if IPs are different
-      ansible.builtin.debug:
-        msg: "Old IP: {{ old_ip_address }}; Current IP: {{ current_ip_address }}. Continuing with tasks."
-      when: old_ip_address != current_ip_address
+   - name: Proceed with tasks if IPs are different
+     ansible.builtin.debug:
+       msg: "Old IP: {{ old_ip_address }}; Current IP: {{ current_ip_address }}. Continuing with tasks."
+     when: old_ip_address != current_ip_address
 
 
    - name: Timmay HARD STOP this Playbook
