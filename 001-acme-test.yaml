@@ -26,6 +26,15 @@
       token: "{{ ansible_password }}"
      register: le_private_key
 
+   - name: 02 - Read The Cloudflare API Key from Vault
+     community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: "{{ vault_mount }}"
+      path: "cloudflare_token"
+      auth_method: token
+      token: "{{ ansible_password }}"
+     register: cloudflare_token
+
 #   - name: Print 
 #     ansible.builtin.debug:
 #       msg: "{{ server_private_key.secret.public_key }}"
@@ -55,14 +64,33 @@
      register: challenge_response
 
 
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ challenge_response }}"
+
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ challenge_data.test-csr.theglens.net.dns-01 }}"
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+   - name: Create TXT record with value "unique value"
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.secret.api_token }}"
+       record: testansible
+       type: TXT
+       value: this-is-a-unique-value
+       state: present    # present (default), absent
+       zone: theglens.net
+     register: cloudflare_response
+
    - name: Print 
      ansible.builtin.debug:
        msg: "{{ challenge_response }}"
 
 
 
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
 
 
 
