@@ -67,14 +67,14 @@
        token: "{{ ansible_password }}"
      register: cloudflare_token
 
-   - name: Print using a var
-     ansible.builtin.debug:
-      var: cloudflare_token.data.data.api_key
+#   - name: Print using a var
+#     ansible.builtin.debug:
+#      var: cloudflare_token.data.data.api_key
 
 
    - name: Delete A record with Old IP address
      community.general.cloudflare_dns:
-       api_token: "{{ cloudflare_token }}"
+       api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: ssl-vpn
        type: A
        state: absent   # present (default), absent
