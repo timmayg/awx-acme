@@ -17,6 +17,10 @@
       token: "{{ ansible_password }}"
      register: response
 
+    - name: Print 
+      ansible.builtin.debug:
+        msg: "{{ response.secret.public_key }}"
+        msg: "{{ response.secret.private_key }}"
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
