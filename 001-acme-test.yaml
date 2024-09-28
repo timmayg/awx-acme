@@ -26,7 +26,7 @@
    - name: Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
        path: ~/test-csr.theglens.net.csr
-       privatekey_content: {{ response.secret.private_key }}
+       privatekey_content: "{{ response.secret.private_key }}"
        common_name: test-csr.theglens.net
 
 
