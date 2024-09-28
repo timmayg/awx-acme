@@ -102,11 +102,29 @@
        zone: theglens.net
      register: response
 
+    - name: Create a new Path and two new key-value pairs in the KV2 engine
+      community.hashi_vault.vault_kv2_write:
+        url: "https://vault.theglens.net:8200"
+        path: "{{ vault_secret }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+        engine_mount_point: "kv"
+        data: 
+          ip_addr: "{{ public_ip.json.ip }}"
+
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
 
 
+   - name: 01 - Read The Homenet Inet IP from Vault
+     community.hashi_vault.vault_kv2_get:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: "{{ vault_secret }}"
+       auth_method: token
+       token: "{{ ansible_password }}"
+     register: vault_homenet_inet_ip
 
 
 
