@@ -8,7 +8,7 @@
    vault_secret: "homenet_inet_ip"
 
   tasks:
-   - name: Get the public IP address of the network.
+   - name: Get the public IP address of the network
      ansible.builtin.uri:
        url: https://api.ipify.org?format=json
        method: Get
@@ -18,9 +18,10 @@
      retries: 6
      delay: 10
 
-   - name: Display the public IP address of the network.
+   - name: Display the ipify IP address
      ansible.builtin.debug:
-       msg: "{{ public_ip.json.ip }}"
+#       msg: "{{ public_ip.json.ip }}"
+       msg: "{{ public_ip }}"
 
    - name: 01 - Read The Homenet Inet IP from Vault
      community.hashi_vault.vault_kv2_get:
