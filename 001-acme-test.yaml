@@ -83,6 +83,15 @@
      register: response
 
 
+   - name: Print using a var
+     ansible.builtin.debug:
+      var: public_ip
+
+   - name: Print using a var
+     ansible.builtin.debug:
+      var: public_ip.json.ip
+
+
    - name: Create A record with New IP address
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
