@@ -5,9 +5,91 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "homenet_inet_ip"
 
   tasks:
+
+   - name: 01 - Read The Servers Private Key from Vault
+     community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: "{{ vault_mount }}"
+      path: "ssl_vpn_theglens_net_keys"
+      auth_method: token
+      token: "{{ ansible_password }}"
+     register: response
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
+
+   - name: Generate an OpenSSL Certificate Signing Request
+     community.crypto.openssl_csr:
+       path: /etc/ssl/csr/www.ansible.com.csr
+       privatekey_path: /etc/ssl/private/ansible.com.pem
+       common_name: test-csr.theglens.net
+
+
+
+   - name: Use community.general.openssl to create a CSR
+
+
+   - name: 01 - Read The Let's Encrypt Private Key from Vault
+     community.hashi_vault.vault_kv2_get:
+      url: "{{ vault_url }}"
+      engine_mount_point: "{{ vault_mount }}"
+      path: "le_stage_key"
+      auth_method: token
+      token: "{{ ansible_password }}"
+     register: response
+
+   - name: 02 - Write the private key to a file
+     ansible.builtin.copy:
+      content: "{{ response.secret.private_key }}"
+      dest: "~/le_private_key.pem"
+      mode: '0600'
+
+   - name: Create a challenge for sample.com using a account key file.
+     community.crypto.acme_certificate:
+       account_email: timmayglen@gmail.com
+       account_key_src: ~/le_private_key.pem
+       cert: /etc/httpd/ssl/sample.com.crt
+       challenge: dns-01
+       acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+       acme_version: 2
+       # Renew if the certificate is at least 30 days old
+       remaining_days: 60
+     register: sample_com_challenge
+
+
+
+
+
+    - name: Create TXT record with value "unique value"
+      community.general.cloudflare_dns:
+        api_token: "{{ ansible_password }}"
+        record: testansible
+        type: TXT
+        value: this-is-a-unique-value
+        state: present    # present (default), absent
+        zone: theglens.net
+      register: response
+
+
+
+   - name: Pause for a few seconds
+     ansible.builtin.pause:
+      seconds: 20
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
+
+
    - name: 01- Get the public IP address
      ansible.builtin.uri:
        url: https://api.ipify.org?format=json
@@ -113,8 +195,7 @@
          ip_addr: "{{ public_ip.json.ip }}"
 
 
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
+
 
 
    - name: 01 - Read The Homenet Inet IP from Vault

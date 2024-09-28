@@ -2,17 +2,12 @@
 - name: Tasks in this Playbook are for testing purposes only
   hosts: localhost
   gather_facts: false
-  tasks:
+  vars:
+   vault_url: "https://vault.theglens.net:8200"
+   vault_mount: "kv"
+   vault_secret: "homenet_inet_ip"
 
-    - name: Create TXT record with value "unique value"
-      community.general.cloudflare_dns:
-        api_token: "{{ ansible_password }}"
-        record: testansible
-        type: TXT
-        value: this-is-a-unique-value
-        state: present    # present (default), absent
-        zone: theglens.net
-      register: response
+
 
     - name: Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
