@@ -70,7 +70,7 @@
 
    - name: Print the DNS-01 resource value
      ansible.builtin.debug:
-       msg: "{{ challenge_data['test-csr.theglens.net']['dns-01']['resource_value'] }}"
+       msg: "{{ challenge_data['.test-csr.theglens.net']['.dns-01']['.resource_value'] }}"
  
 
 
