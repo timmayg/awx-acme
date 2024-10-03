@@ -5,6 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
+   fqdn: "test-csr.theglens.net"
 
   tasks:
 
@@ -45,17 +46,17 @@
      community.crypto.openssl_csr:
        path: ~/test-csr.theglens.net.csr
        privatekey_content: "{{ server_private_key.secret.private_key }}"
-       common_name: test-csr.theglens.net
+       common_name: " {{ fqdn }} "
 
 
    - name: 04 - Create an ACME Challenge
      community.crypto.acme_certificate:
        account_email: timmayglen@gmail.com
        account_key_content: "{{ le_private_key.secret.private_key }}"
-       csr: ~/test-csr.theglens.net.csr
-       cert: ~/test-csr.theglens.net.cer
-       chain: ~/test-csr.theglens.net.chain
-       fullchain: ~/test-csr.theglens.net.fullchain
+       csr: "~/{{ fqdn }}.csr
+       cert: "~/{{ fqdn }}.cer
+       chain: "~/{{ fqdn }}.chain
+       fullchain: "~/{{ fqdn }}.fullchain
        challenge: dns-01
        acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
        acme_version: 2
@@ -68,10 +69,16 @@
      ansible.builtin.debug:
        msg: "{{ challenge_response }}"
 
-
    - name: Display challenge_data_dns
      debug:
        var: challenge_response.challenge_data_dns
+
+
+   - name: Display challenge_data_dns
+     debug:
+       var: challenge_response.challenge_data.
+
+
 
 
    - name: Timmay HARD STOP this Playbook
