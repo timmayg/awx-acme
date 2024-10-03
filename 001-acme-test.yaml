@@ -74,6 +74,13 @@
      ansible.builtin.debug:
        var: challenge_response.authorizations.{{ fqdn }}
 
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
+
 #   - name: 04b - Display challenge_data_dns
 #     ansible.builtin.debug:
 #       var: challenge_response.challenge_data_dns
@@ -105,10 +112,6 @@
        zone: theglens.net
      register: cloudflare_response
 
-
-
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
 
 
 
