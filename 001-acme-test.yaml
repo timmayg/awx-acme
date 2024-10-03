@@ -44,7 +44,7 @@
 
    - name: 03 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
-       path: "~/{{ fqdn }}.csr"
+       path: "{{ fqdn }}.csr"
        privatekey_content: "{{ server_private_key.secret.private_key }}"
        common_name: " {{ fqdn }} "
 
@@ -53,10 +53,10 @@
      community.crypto.acme_certificate:
        account_email: timmayglen@gmail.com
        account_key_content: "{{ le_private_key.secret.private_key }}"
-       csr: "~/{{ fqdn }}.csr"
-       cert: "~/{{ fqdn }}.cer"
-       chain: "~/{{ fqdn }}.chain"
-       fullchain: "~/{{ fqdn }}.fullchain"
+       csr: "{{ fqdn }}.csr"
+       cert: "{{ fqdn }}.cer"
+       chain: "{{ fqdn }}.chain"
+       fullchain: "{{ fqdn }}.fullchain"
        challenge: dns-01
        acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
        acme_version: 2
