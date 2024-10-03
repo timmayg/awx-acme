@@ -70,9 +70,15 @@
      ansible.builtin.debug:
        msg: "{{ challenge_response }}"
 
-   - name: 04b - Display challenge_data_dns
+ # Change this from msg to var
+ #  - name: 04a1 - Print
+ #    ansible.builtin.debug:
+ #      msg: "{{ challenge_response }}"
+
+
+   - name: 04a2 - Display challenge_data_dns
      ansible.builtin.debug:
-       var: challenge_response.authorizations.{{ fqdn }}.dns-01
+       var: challenge_response.authorizations.{{ fqdn }}.dns-01 | string
 
 
    - name: Timmay HARD STOP this Playbook
