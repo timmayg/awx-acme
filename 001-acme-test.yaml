@@ -72,18 +72,39 @@
 
    - name: 04b - Display challenge_data_dns
      ansible.builtin.debug:
-       var: challenge_response.challenge_data_dns
+       var: challenge_response.authorizations.{{ fqdn }}
 
-   - name: 04c - Extract TXT record hostname (_acme-challenge.test-csr)
-     set_fact:
-       txt_record_hostname: "{{ item.split('.')[0] }}.{{ item.split('.')[1] }}"
-     vars:
-       item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
+#   - name: 04b - Display challenge_data_dns
+#     ansible.builtin.debug:
+#       var: challenge_response.challenge_data_dns
+#
+#   - name: 04c - Extract TXT record hostname (_acme-challenge.test-csr)
+#     set_fact:
+#       txt_record_hostname: "{{ item.split('.')[0] }}.{{ item.split('.')[1] }}"
+#     vars:
+#       item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
+#
+#
+#   - name: 04d - Print
+#     ansible.builtin.debug:
+#       msg: "{{ txt_record_hostname }}"
+#
+#   - name: 04e - Print
+#     ansible.builtin.debug:
+#       msg: "{{ txt_record_hostname }}"
 
 
-   - name: Print
-     ansible.builtin.debug:
-       msg: "{{ txt_record_hostname }}"
+
+   - name: Create TXT record with value "unique value"
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.secret.api_token }}"
+       record: testansible
+       type: TXT
+       value: this-is-a-unique-value
+       state: present    # present (default), absent
+       zone: theglens.net
+     register: cloudflare_response
+
 
 
    - name: Timmay HARD STOP this Playbook
