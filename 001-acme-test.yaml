@@ -75,7 +75,7 @@
        var: challenge_response.challenge_data_dns
 
    - name: Extract TXT record hostname from challenge data
-     set_fact:
+     ansible.builtin.set_fact:
        txt_record_hostname: "{{ item | regex_replace('\\..*', '') }}"
      vars:
        item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
