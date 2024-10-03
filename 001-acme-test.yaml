@@ -71,7 +71,7 @@
 
    - name: Display challenge_data_dns
      debug:
-       var: challenge_response.msg.challenge_data_dns
+       var: challenge_response.challenge_data_dns
 
 
    - name: Timmay HARD STOP this Playbook
