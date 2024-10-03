@@ -6,6 +6,7 @@
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
    fqdn: "test-csr.theglens.net"
+   le_email: "timmayglen@gmail.com"
 
   tasks:
 
@@ -51,7 +52,7 @@
 
    - name: 04 - Create an ACME Challenge
      community.crypto.acme_certificate:
-       account_email: timmayglen@gmail.com
+       account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
        csr: "{{ fqdn }}.csr"
        cert: "{{ fqdn }}.cer"
@@ -70,15 +71,18 @@
        msg: "{{ challenge_response }}"
 
    - name: Display challenge_data_dns
-     debug:
+     ansible.builtin.debug:
        var: challenge_response.challenge_data_dns
 
+   - name: Extract TXT record hostname from challenge data
+     set_fact:
+       txt_record_hostname: "{{ item | regex_replace('\\..*', '') }}"
+     vars:
+       item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
 
-   - name: Display challenge_data_dns
-     debug:
-       var: challenge_response.challenge_data.
-
-
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ challenge_response }}"
 
 
    - name: Timmay HARD STOP this Playbook
