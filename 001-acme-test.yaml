@@ -48,7 +48,7 @@
        common_name: test-csr.theglens.net
 
 
-   - name: Create an ACME Challenge
+   - name: 04 - Create an ACME Challenge
      community.crypto.acme_certificate:
        account_email: timmayglen@gmail.com
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -68,14 +68,21 @@
      ansible.builtin.debug:
        msg: "{{ challenge_response }}"
 
-   - name: Print the DNS-01 resource value
-     ansible.builtin.debug:
-       msg: "{{ challenge_response['msg']['challenge_data_dns'] }}"
 
+   - name: Display challenge_data_dns
+     debug:
+       var: msg.challenge_data_dns
 
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
+
+
+
+   - name: Print the DNS-01 resource value
+     ansible.builtin.debug:
+       msg: "{{ challenge_response['msg']['challenge_data_dns'] }}"
+
 
 
 
