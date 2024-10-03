@@ -76,9 +76,17 @@
  #      msg: "{{ challenge_response }}"
 
 
-   - name: 04a2 - Display challenge_data_dns
+   - name: Extract DNS-01 challenge resource_value
+     ansible.builtin.set_fact:
+       dns_01_resource_value: "{{ challenge_response.msg.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
+
+   - name: Display the extracted DNS-01 resource_value
      ansible.builtin.debug:
-       var: challenge_response.authorizations.{{ fqdn }}.dns-01 | string
+       msg: "DNS-01 resource_value is: {{ dns_01_resource_value }}"
+
+
+
+
 
 
    - name: Timmay HARD STOP this Playbook
