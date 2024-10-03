@@ -46,7 +46,7 @@
      community.crypto.openssl_csr:
        path: "{{ fqdn }}.csr"
        privatekey_content: "{{ server_private_key.secret.private_key }}"
-       common_name: " {{ fqdn }} "
+       common_name: "{{ fqdn }}"
 
 
    - name: 04 - Create an ACME Challenge
