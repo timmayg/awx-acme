@@ -82,7 +82,7 @@
 
    - name: Extract TXT record hostname (_acme-challenge)
      set_fact:
-       txt_record_hostname: "{{ item.split('.')[0] }}"
+       txt_record_hostname: "{{ item.split('.')[1] }}"
      vars:
        item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
 
