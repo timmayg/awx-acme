@@ -74,11 +74,19 @@
      ansible.builtin.debug:
        var: challenge_response.challenge_data_dns
 
-   - name: Extract TXT record hostname from challenge data
-     ansible.builtin.set_fact:
-       txt_record_hostname: "{{ item | regex_replace('\\..*', '') }}"
+#   - name: Extract TXT record hostname from challenge data
+#     ansible.builtin.set_fact:
+#       txt_record_hostname: "{{ item | regex_replace('\\..*', '') }}"
+#     vars:
+#       item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
+
+   - name: Extract TXT record hostname (_acme-challenge)
+     set_fact:
+       txt_record_hostname: "{{ item.split('.')[0] }}"
      vars:
        item: "{{ challenge_response.challenge_data_dns.keys() | first }}"
+
+
 
    - name: Print
      ansible.builtin.debug:
