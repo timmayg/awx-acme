@@ -72,7 +72,7 @@
 
    - name: 04b - Display challenge_data_dns
      ansible.builtin.debug:
-       var: challenge_response.authorizations.{{ fqdn }}
+       var: challenge_response.authorizations.{{ fqdn }}.dns-01
 
 
    - name: Timmay HARD STOP this Playbook
