@@ -82,7 +82,7 @@
 
    - name: Print
      ansible.builtin.debug:
-       msg: "{{ challenge_response }}"
+       msg: "{{ txt_record_hostname }}"
 
 
    - name: Timmay HARD STOP this Playbook
