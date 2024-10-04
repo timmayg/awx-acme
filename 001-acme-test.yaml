@@ -37,11 +37,9 @@
       token: "{{ ansible_password }}"
      register: cloudflare_token
 
-   - name: Print 
-     ansible.builtin.debug:
-       msg: "{{ cloudflare_token.data.data.api_key }}"
-#      cloudflare_token.secret.api_token
-#       msg: "{{ server_private_key.secret.private_key }}"
+#   - name: Print 
+#     ansible.builtin.debug:
+#       msg: "{{ cloudflare_token.data.data.api_key }}"
 
 
    - name: Timmay HARD STOP this Playbook
@@ -103,7 +101,7 @@
 
    - name: Create DNS TXT record with value "unique value"
      community.general.cloudflare_dns:
-       api_token: "{{ cloudflare_token.secret.api_token }}"
+       api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
        type: TXT
        value: "{{ dns_01_challenge_text }}"
