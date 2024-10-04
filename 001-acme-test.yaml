@@ -42,10 +42,6 @@
 #       msg: "{{ cloudflare_token.data.data.api_key }}"
 
 
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
-
-
 
    - name: 04 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
