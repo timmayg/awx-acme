@@ -89,11 +89,11 @@
        dns_01_resource_value: "{{ challenge_response.msg.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
        record_prefix: "{{ challenge_response.msg.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0] }}"
 
-- name: Debug the extracted values
-  ansible.builtin.debug:
-    msg: 
-      - "DNS-01 resource_value: {{ dns_01_resource_value }}"
-      - "Record prefix: {{ record_prefix }}"
+   - name: Debug the extracted values
+     ansible.builtin.debug:
+       msg: 
+         - "DNS-01 resource_value: {{ dns_01_resource_value }}"
+         - "Record prefix: {{ record_prefix }}"
 
 
 
