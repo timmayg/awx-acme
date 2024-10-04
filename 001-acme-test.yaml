@@ -139,7 +139,7 @@
        engine_mount_point: "{{ vault_mount }}"
        path: "{{ fqdn }}"
        data:
-         cert: "{{ lookup('file', ''{{ fqdn }}.cer'') }}"
+         cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
        auth_method: token
        token: "{{ ansible_password }}"
 
