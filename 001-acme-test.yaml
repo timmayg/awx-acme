@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-af.theglens.net"
+   fqdn: "test-ag.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
@@ -151,6 +151,7 @@
        path: "{{ fqdn }}"
        data:
          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
+         chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
        auth_method: token
        token: "{{ ansible_password }}"
