@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-csr.theglens.net"
+   fqdn: "test-aa.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
@@ -132,7 +132,7 @@
    - name: cat the cert file
      ansible.builtin.shell: cat "{{ fqdn }}.cer"
      register: cert_file
-     
+
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
