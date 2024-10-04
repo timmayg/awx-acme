@@ -144,33 +144,31 @@
        token: "{{ ansible_password }}"
 
 
+   - name: Read the New Certificate from Vault, REQD for the next step 
+     community.hashi_vault.vault_kv2_get:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: "{{ fqdn }}"
+       auth_method: token
+       token: "{{ ansible_password }}"
+     register: current
 
 
-    - name: Read the New Certificate from Vault, REQD for the next step 
-      community.hashi_vault.vault_kv2_get:
-        url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "{{ fqdn }}"
-        auth_method: token
-        token: "{{ ansible_password }}"
-      register: current
-
-
-    - name: Append the Public Key to Vault Secret
-      vars:
-        values_to_update:
-           public_key: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
-      community.hashi_vault.vault_kv2_write:
-        url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "{{ fqdn }}"
-        data: >-
-          {{
-            current.secret
-            | combine(values_to_update)
-          }}
-        auth_method: token
-        token: "{{ ansible_password }}"
+   - name: Append the Public Key to Vault Secret
+     vars:
+       values_to_update:
+          public_key: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
+     community.hashi_vault.vault_kv2_write:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: "{{ fqdn }}"
+       data: >-
+         {{
+           current.secret
+           | combine(values_to_update)
+         }}
+       auth_method: token
+       token: "{{ ansible_password }}"
 
 
 
