@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-ac.theglens.net"
+   fqdn: "test-ad.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
@@ -127,9 +127,9 @@
      register: certificate_response
 #     when: sample_com_challenge is changed
 
-   - name: cat the cert file
-     ansible.builtin.shell: cat "{{ fqdn }}.cer"
-     register: cert_file
+#   - name: cat the cert file
+#     ansible.builtin.shell: cat "{{ fqdn }}.cer"
+#     register: cert_file
 
 
 
@@ -144,6 +144,33 @@
        token: "{{ ansible_password }}"
 
 
+
+
+    - name: Read the New Certificate from Vault, REQD for the next step 
+      community.hashi_vault.vault_kv2_get:
+        url: "{{ vault_url }}"
+        engine_mount_point: "{{ vault_mount }}"
+        path: "{{ fqdn }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+      register: current
+
+
+    - name: Append the Public Key to Vault Secret
+      vars:
+        values_to_update:
+           public_key: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
+      community.hashi_vault.vault_kv2_write:
+        url: "{{ vault_url }}"
+        engine_mount_point: "{{ vault_mount }}"
+        path: "{{ fqdn }}"
+        data: >-
+          {{
+            current.secret
+            | combine(values_to_update)
+          }}
+        auth_method: token
+        token: "{{ ansible_password }}"
 
 
 
