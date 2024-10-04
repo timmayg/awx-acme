@@ -89,19 +89,8 @@
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
 
 
-   - name: Delete the DNS TXT record (if it exists)
-     community.general.cloudflare_dns:
-       api_token: "{{ cloudflare_token.data.data.api_key }}"
-       record: "{{ dns_01_challenge_fqdn }}"
-       type: TXT
-#       value: "{{ dns_01_challenge_text }}"
-       state: absent    # present (default), absent
-       zone: theglens.net
-#     register: cloudflare_dns_delete
 
-
-
-   - name: Create DNS TXT record with value "unique value"
+   - name: 07 - Create DNS TXT record with value "unique value"
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
@@ -110,6 +99,10 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
+
+   - name: 08 - Pause the Playbook for 20 seconds
+     ansible.builtin.pause:
+       seconds: 20
 
 
    - name: XX - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
@@ -136,6 +129,17 @@
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
+
+
+   - name: 0x - Delete the DNS TXT record (if it exists)
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.data.data.api_key }}"
+       record: "{{ dns_01_challenge_fqdn }}"
+       type: TXT
+#       value: "{{ dns_01_challenge_text }}"
+       state: absent    # present (default), absent
+       zone: theglens.net
+#     register: cloudflare_dns_delete
 
 
 
