@@ -87,9 +87,10 @@
    - name: Extract DNS-01 resource_value and text before 'theglens.net'
      set_fact:
        dns_01_resource_value: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
-       record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0] }}"
+       #record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0] }}"
+       record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0:2] | join('.') }}"
 
-   - name: Debug the extracted values
+   - name: Print
      ansible.builtin.debug:
        msg: 
          - "DNS-01 resource_value: {{ dns_01_resource_value }}"
