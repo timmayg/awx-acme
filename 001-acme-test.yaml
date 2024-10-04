@@ -129,7 +129,10 @@
      register: certificate_response
 #     when: sample_com_challenge is changed
 
-
+   - name: cat the cert file
+     ansible.builtin.shell: cat "{{ fqdn }}.cer"
+     register: cert_file
+     
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
