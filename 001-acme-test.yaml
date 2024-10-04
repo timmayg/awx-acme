@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-ad.theglens.net"
+   fqdn: "test-ae.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
@@ -157,7 +157,7 @@
    - name: Append the Public Key to Vault Secret
      vars:
        values_to_update:
-          public_key: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
+          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
      community.hashi_vault.vault_kv2_write:
        url: "{{ vault_url }}"
        engine_mount_point: "{{ vault_mount }}"
