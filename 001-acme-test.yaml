@@ -10,7 +10,7 @@
 
   tasks:
 
-   - name: 01 - Read The Servers Private Key from Vault
+   - name: 01 - Read The TLS Server Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
@@ -28,7 +28,7 @@
       token: "{{ ansible_password }}"
      register: le_private_key
 
-   - name: 02 - Read The Cloudflare API Key from Vault
+   - name: 03 - Read The Cloudflare API Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
@@ -43,14 +43,14 @@
 #       msg: "{{ server_private_key.secret.private_key }}"
 
 
-   - name: 03 - Generate an OpenSSL Certificate Signing Request
+   - name: 04 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
        path: "{{ fqdn }}.csr"
        privatekey_content: "{{ server_private_key.secret.private_key }}"
        common_name: "{{ fqdn }}"
 
 
-   - name: 04 - Create an ACME Challenge
+   - name: 05 - Create an ACME Challenge
      community.crypto.acme_certificate:
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -76,14 +76,37 @@
  #      msg: "{{ challenge_response }}"
 
 
-   - name: Extract DNS-01 challenge resource_value
+   - name: 06 - Extract DNS-01 challenge resource_value
      ansible.builtin.set_fact:
-       dns_01_resource_value: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
+       dns_01_challenge_text: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
 
-   - name: Display the extracted DNS-01 resource_value
-     ansible.builtin.debug:
-       msg: "DNS-01 resource_value is: {{ dns_01_resource_value }}"
+#   - name: Print
+#     ansible.builtin.debug:
+#       msg: "DNS-01 resource_value is: {{ dns_01_challenge_text }}"
 
+   - name: Extract DNS-01 resource_value and text before 'theglens.net'
+     set_fact:
+       dns_01_resource_value: "{{ challenge_response.msg.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
+       record_prefix: "{{ challenge_response.msg.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0] }}"
+
+- name: Debug the extracted values
+  ansible.builtin.debug:
+    msg: 
+      - "DNS-01 resource_value: {{ dns_01_resource_value }}"
+      - "Record prefix: {{ record_prefix }}"
+
+
+
+
+   - name: Create TXT record with value "unique value"
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.secret.api_token }}"
+       record: testansible
+       type: TXT
+       value: "{{ dns_01_challenge_text }}"
+       state: present    # present (default), absent
+       zone: theglens.net
+     register: cloudflare_response
 
 
 
