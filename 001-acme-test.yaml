@@ -84,15 +84,10 @@
 #     ansible.builtin.debug:
 #       msg: "DNS-01 resource_value is: {{ dns_01_challenge_text }}"
 
-   - name: Extract DNS-01 resource_value and text before 'theglens.net'
+   - name: 06 - Extract DNS-01 resource_value and text before 'theglens.net'
      ansible.builtin.set_fact:
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-
-
-   - name: Print
-     ansible.builtin.debug:
-       msg: "Cloudflare API Token: {{ cloudflare_token.secret.api_token }}"
 
 
    - name: Create DNS TXT record with value "unique value"
