@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-aa.theglens.net"
+   fqdn: "test-ab.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
@@ -36,6 +36,11 @@
       auth_method: token
       token: "{{ ansible_password }}"
      register: cloudflare_token
+
+
+
+
+
 
 #   - name: Print 
 #     ansible.builtin.debug:
@@ -105,7 +110,7 @@
        seconds: 20
 
 
-   - name: XX - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
+   - name: 09 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -125,6 +130,25 @@
    - name: cat the cert file
      ansible.builtin.shell: cat "{{ fqdn }}.cer"
      register: cert_file
+
+
+
+   - name: Write the New Certificate to Vault
+     community.hashi_vault.vault_kv2_write:
+       url: "{{ vault_url }}"
+       engine_mount_point: "{{ vault_mount }}"
+       path: "{{ fqdn }}"
+       data:
+         cert: "{{ lookup('file', ''{{ fqdn }}.cer'') }}"
+       auth_method: token
+       token: "{{ ansible_password }}"
+
+
+
+
+
+
+
 
 
    - name: Timmay HARD STOP this Playbook
