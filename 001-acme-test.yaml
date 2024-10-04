@@ -84,10 +84,22 @@
 #     ansible.builtin.debug:
 #       msg: "DNS-01 resource_value is: {{ dns_01_challenge_text }}"
 
-   - name: 06 - Extract DNS-01 resource_value and text before 'theglens.net'
+   - name: 06 - Extract FQDN and DNS Challenge Text from ACME Response
      ansible.builtin.set_fact:
-       dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
-       dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
+       dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
+       dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
+
+
+   - name: Create DNS TXT record with value "unique value"
+     community.general.cloudflare_dns:
+       api_token: "{{ cloudflare_token.data.data.api_key }}"
+       record: "{{ dns_01_challenge_fqdn }}"
+       type: TXT
+#       value: "{{ dns_01_challenge_text }}"
+       state: absent    # present (default), absent
+       zone: theglens.net
+#     register: cloudflare_response
+
 
 
    - name: Create DNS TXT record with value "unique value"
