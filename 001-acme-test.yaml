@@ -37,10 +37,15 @@
       token: "{{ ansible_password }}"
      register: cloudflare_token
 
-#   - name: Print 
-#     ansible.builtin.debug:
-#       msg: "{{ server_private_key.secret.public_key }}"
+   - name: Print 
+     ansible.builtin.debug:
+       msg: "{{ cloudflare_token }}"
 #       msg: "{{ server_private_key.secret.private_key }}"
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
 
 
    - name: 04 - Generate an OpenSSL Certificate Signing Request
@@ -106,9 +111,9 @@
      register: cloudflare_response
 
 
+
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
-
 
 
 
