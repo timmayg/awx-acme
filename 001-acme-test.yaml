@@ -87,9 +87,11 @@
    - name: Extract DNS-01 resource_value and text before 'theglens.net'
      set_fact:
        dns_01_resource_value: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
-       #record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0] }}"
-       record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0:2] | join('.') }}"
+       #record_prefix: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].record.split('.')[0:2] | join('.') }}"
+       record_prefix: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
 
+
+ 
    - name: Print
      ansible.builtin.debug:
        msg: 
@@ -98,11 +100,16 @@
 
 
 
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
 
    - name: Create TXT record with value "unique value"
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.secret.api_token }}"
-       record: testansible
+       record: "{{ record_prefix }}"
        type: TXT
        value: "{{ dns_01_challenge_text }}"
        state: present    # present (default), absent
@@ -110,11 +117,6 @@
      register: cloudflare_response
 
 
-
-
-
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
 
 
 
