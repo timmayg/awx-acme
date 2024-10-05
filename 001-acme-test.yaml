@@ -11,8 +11,17 @@
   tasks:
 
    - name: Generate a random 7-character string of lowercase letters
+     community.general.random_string:
+       length: 7
+       lower: true
+       upper: false
+       special: false
+       numbers: false
+     register: rand 
+
+   - name: Generate a random 7-character string of lowercase letters
      ansible.builtin.set_fact:
-       random_string: "{{ lookup('password', '/dev/null', length=7, chars='abcdefghijklmnopqrstuvwxyz') }}"
+#       rand: "{{ lookup('password', '/dev/null', length=7, chars='abcdefghijklmnopqrstuvwxyz') }}"
        fqdn: "{{ rand }}.theglens.net"
 
 
@@ -97,6 +106,11 @@
 
    - name: TIMMAY Stop the Playbool
      ansible.builtin.meta: end_play
+
+
+
+
+
 
 
    - name: 06 - Extract FQDN and DNS Challenge Text from ACME Response
