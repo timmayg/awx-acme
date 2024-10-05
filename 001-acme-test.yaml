@@ -79,6 +79,8 @@
      register: challenge_response
 
 
+
+
 #   - name: 0a - Print
 #     ansible.builtin.debug:
 #       msg: "{{ challenge_response }}"
@@ -95,13 +97,6 @@
 #       dns_01_challenge_text: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
 
 
-   - name: Print
-     ansible.builtin.debug:
-       msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
-       msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
-
-
-
 
 
 
@@ -110,6 +105,15 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
+
+
+
+   - name: Print
+     ansible.builtin.debug:
+       msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
+       msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
+
+
 
 
    - name: 07 - Create DNS TXT record with value "unique value"
