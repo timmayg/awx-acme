@@ -10,10 +10,22 @@
 
   tasks:
 
-   - name: Generate a random 7-character string of lowercase letters
+   - name: Generate a random FQDN
      ansible.builtin.set_fact:
        rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
+
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ rand }}"
+
+   - name: Generate a random FQDN
+     ansible.builtin.set_fact:
        fqdn: "{{ rand }}.theglens.net"
+
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ fqdn }}"
+
 
 
    - name: 01 - Read The TLS Server Private Key from Vault
