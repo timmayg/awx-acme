@@ -20,7 +20,6 @@
      register: server_private_key
 
 
-
    - name: 02 - Read The Let's Encrypt Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
@@ -29,6 +28,7 @@
       auth_method: token
       token: "{{ ansible_password }}"
      register: le_private_key
+
 
    - name: 03 - Read The Cloudflare API Key from Vault
      community.hashi_vault.vault_kv2_get:
@@ -40,14 +40,9 @@
      register: cloudflare_token
 
 
-
-
-
-
 #   - name: Print 
 #     ansible.builtin.debug:
 #       msg: "{{ cloudflare_token.data.data.api_key }}"
-
 
 
    - name: 04 - Generate an OpenSSL Certificate Signing Request
@@ -72,29 +67,32 @@
        remaining_days: 60
      register: challenge_response
 
+
 #   - name: 0a - Print
 #     ansible.builtin.debug:
 #       msg: "{{ challenge_response }}"
 
- # Change this from msg to var
- #  - name: 0a1 - Print
- #    ansible.builtin.debug:
- #      msg: "{{ challenge_response }}"
+
+#  Change this from msg to var
+#   - name: 0a1 - Print
+#     ansible.builtin.debug:
+#       msg: "{{ challenge_response }}"
 
 
 #   - name: 06 - Extract DNS-01 challenge resource_value
 #     ansible.builtin.set_fact:
 #       dns_01_challenge_text: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
 
+
 #   - name: Print
 #     ansible.builtin.debug:
 #       msg: "DNS-01 resource_value is: {{ dns_01_challenge_text }}"
+
 
    - name: 06 - Extract FQDN and DNS Challenge Text from ACME Response
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-
 
 
    - name: 07 - Create DNS TXT record with value "unique value"
@@ -106,6 +104,7 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
+
 
    - name: 08 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
@@ -129,6 +128,7 @@
      register: certificate_response
 #     when: sample_com_challenge is changed
 
+
 #   - name: cat the cert file
 #     ansible.builtin.shell: cat "{{ fqdn }}.cer"
 #     register: cert_file
@@ -143,7 +143,6 @@
        state: absent    # present (default), absent
        zone: theglens.net
 #     register: cloudflare_dns_delete
-
 
 
    - name: 11 - Write the New Certificate to Vault
