@@ -10,14 +10,28 @@
 
   tasks:
 
+
+   - name: Print 
+     ansible.builtin.debug:
+       msg: "{{ fqdn | replace('.', '_') }}_keys"
+
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
+
+
+
    - name: 01 - Read The TLS Server Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      path: "ssl_vpn_theglens_net_keys"
+      path: "{{ fqdn | replace('.', '_') }}_keys"
       auth_method: token
       token: "{{ ansible_password }}"
      register: server_private_key
+
+
 
    - name: 02 - Read The Let's Encrypt Private Key from Vault
      community.hashi_vault.vault_kv2_get:
@@ -156,11 +170,6 @@
        auth_method: token
        token: "{{ ansible_password }}"
 
-
-
-
-   - name: Timmay HARD STOP this Playbook
-     ansible.builtin.meta: end_play
 
 
 
