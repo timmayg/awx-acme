@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   fqdn: "test-ag.theglens.net"
+   fqdn: "lab-ftd.theglens.net"
    le_email: "timmayglen@gmail.com"
 
   tasks:
