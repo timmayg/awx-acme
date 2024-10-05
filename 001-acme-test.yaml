@@ -12,7 +12,7 @@
 
    - name: Generate a random 7-character string of lowercase letters
      ansible.builtin.set_fact:
-       rand: "{{ lookup('password', '/dev/null', length=7, chars=ascii_lowercase) }}"
+       random_string: "{{ lookup('password', '/dev/null', length=7, chars='abcdefghijklmnopqrstuvwxyz') }}"
        fqdn: "{{ rand }}.theglens.net"
 
 
