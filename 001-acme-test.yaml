@@ -11,12 +11,8 @@
   tasks:
 
    - name: Generate a random 7-character string of lowercase letters
-     community.general.random_string:
-       length: 7
-       lower: true
-       upper: false
-       special: false
-       numbers: false
+     ansible.builtin.debug:
+       var: lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false)
      register: rand 
 
    - name: Generate a random 7-character string of lowercase letters
