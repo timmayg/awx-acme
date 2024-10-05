@@ -10,6 +10,12 @@
 
   tasks:
 
+   - name: Generate a random 7-character string of lowercase letters
+     ansible.builtin.set_fact:
+       rand: "{{ lookup('password', '/dev/null', length=7, chars=ascii_lowercase) }}"
+       fqdn: "{{ rand }}.theglens.net"
+
+
    - name: 01 - Read The TLS Server Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
