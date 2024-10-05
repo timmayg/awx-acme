@@ -43,4 +43,6 @@
    - name: 06 - Print account contacts
      ansible.builtin.debug:
       var: account_data.account.contact
-       
+
+   - name: TIMMAY Stop the Playbool
+     ansible.builtin.meta: end_play

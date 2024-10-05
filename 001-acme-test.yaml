@@ -90,9 +90,13 @@
 #       dns_01_challenge_text: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
 
 
-#   - name: Print
-#     ansible.builtin.debug:
-#       msg: "DNS-01 resource_value is: {{ dns_01_challenge_text }}"
+   - name: Print
+     ansible.builtin.debug:
+       msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
+       msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
+
+   - name: TIMMAY Stop the Playbool
+     ansible.builtin.meta: end_play
 
 
    - name: 06 - Extract FQDN and DNS Challenge Text from ACME Response
