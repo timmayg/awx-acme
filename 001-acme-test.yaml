@@ -19,6 +19,11 @@
      ansible.builtin.set_fact:
        fqdn: "{{ rand }}.theglens.net"
 
+
+   - name: Print
+     ansible.builtin.debug:
+       msg: "{{ fqdn }}"
+
    - name: TIMMAY Stop the Playbool
      ansible.builtin.meta: end_play
 
