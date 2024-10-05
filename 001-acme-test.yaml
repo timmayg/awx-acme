@@ -10,42 +10,22 @@
 
   tasks:
 
-#   - name: Generate a random FQDN
-#     ansible.builtin.set_fact:
-#       rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
-
-#   - name: Print
-#     ansible.builtin.debug:
-#       msg: "{{ rand }}"
-
-#   - name: Generate a random FQDN
-#     ansible.builtin.set_fact:
-#       fqdn: "{{ rand }}.theglens.net"
-
-#   - name: Print
-#     ansible.builtin.debug:
-#       msg: "{{ fqdn }}"
-
+   - name: Generate a random FQDN
+     ansible.builtin.set_fact:
+       rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
 
 
    - name: Generate a random FQDN
      ansible.builtin.set_fact:
-       rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
        fqdn: "{{ rand }}.theglens.net"
-
-   - name: Print
-     ansible.builtin.debug:
-       msg: "{{ fqdn }}"
-
-
 
 
    - name: 01 - Read The TLS Server Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      #path: generic_use_ec384_keys
-      path: "{{ fqdn | replace('.', '_') }}_keys"
+      path: generic_use_ec384_keys
+      #path: "{{ fqdn | replace('.', '_') }}_keys"
       auth_method: token
       token: "{{ ansible_password }}"
      register: server_private_key
