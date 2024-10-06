@@ -1,5 +1,5 @@
 ---
-- name: Tasks in this Playbook are for testing purposes only
+- name: Create a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: false
   vars:
@@ -7,12 +7,17 @@
    vault_mount: "kv"
    fqdn: "lab-ftd.theglens.net"
    le_email: "timmayglen@gmail.com"
+   le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
+   le_key: "le_stage_key"
+#   le_key: "le_prod_key"
+#   le_directory: "https://acme-v02.api.letsencrypt.org/directory"
 
   tasks:
 
    - name: Generate a random FQDN
      ansible.builtin.set_fact:
        rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
+
 
    - name: Generate a random FQDN
      ansible.builtin.set_fact:
@@ -34,7 +39,7 @@
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      path: "le_stage_key"   # options: le_stage_key, le_prod_key
+      path: "le_key"
       auth_method: token
       token: "{{ ansible_password }}"
      register: le_private_key
@@ -71,7 +76,7 @@
        chain: "{{ fqdn }}.chain"
        fullchain: "{{ fqdn }}.fullchain"
        challenge: dns-01
-       acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+       acme_directory: "{{ le_directory }}"
        acme_version: 2
        # Renew if the certificate is at least 30 days old
        remaining_days: 60
@@ -140,7 +145,7 @@
        chain: "{{ fqdn }}.chain"
        fullchain: "{{ fqdn }}.fullchain"
        challenge: dns-01
-       acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+       acme_directory: "{{ le_directory }}"
        acme_version: 2
        # Renew if the certificate is at least 30 days old
        remaining_days: 60
@@ -159,7 +164,6 @@
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
        type: TXT
-#       value: "{{ dns_01_challenge_text }}"
        state: absent    # present (default), absent
        zone: theglens.net
 #     register: cloudflare_dns_delete
@@ -176,9 +180,6 @@
          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
        auth_method: token
        token: "{{ ansible_password }}"
-
-
-
 
 
    - name: 12 - Read the New Certificate from Vault, REQD for the next step 
@@ -208,9 +209,7 @@
        token: "{{ ansible_password }}"
 
 
-
-
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
 
 
