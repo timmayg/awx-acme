@@ -14,12 +14,12 @@
 
   tasks:
 
-   - name: Generate a random FQDN
+   - name: Generate a random string for use in the FQDN
      ansible.builtin.set_fact:
        rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
 
 
-   - name: Generate a random FQDN
+   - name: Build the Random Hostname and FQDN
      ansible.builtin.set_fact:
        fqdn: "aaa{{ rand }}.theglens.net"
 
@@ -32,6 +32,7 @@
       #path: "{{ fqdn | replace('.', '_') }}_keys"
       auth_method: token
       token: "{{ ansible_password }}"
+      no_log: true
      register: server_private_key
 
 
@@ -42,6 +43,7 @@
       path: "{{ le_key }}"
       auth_method: token
       token: "{{ ansible_password }}"
+      no_log: true
      register: le_private_key
 
 
@@ -52,6 +54,7 @@
       path: "cloudflare_token"
       auth_method: token
       token: "{{ ansible_password }}"
+      no_log: true
      register: cloudflare_token
 
 
