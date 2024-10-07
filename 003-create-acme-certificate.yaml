@@ -32,7 +32,6 @@
       #path: "{{ fqdn | replace('.', '_') }}_keys"
       auth_method: token
       token: "{{ ansible_password }}"
-      no_log: true
      register: server_private_key
 
 
@@ -43,7 +42,6 @@
       path: "{{ le_key }}"
       auth_method: token
       token: "{{ ansible_password }}"
-      no_log: true
      register: le_private_key
 
 
@@ -54,7 +52,6 @@
       path: "cloudflare_token"
       auth_method: token
       token: "{{ ansible_password }}"
-      no_log: true
      register: cloudflare_token
 
 
