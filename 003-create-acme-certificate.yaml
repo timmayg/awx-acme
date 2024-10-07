@@ -16,12 +16,12 @@
 
    - name: Generate a random FQDN
      ansible.builtin.set_fact:
-       rand: "{{ lookup('community.general.random_string', length=7, lower=true, upper=false, special=false, numbers=false) }}"
+       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
 
 
    - name: Generate a random FQDN
      ansible.builtin.set_fact:
-       fqdn: "{{ rand }}.theglens.net"
+       fqdn: "aaa{{ rand }}.theglens.net"
 
 
    - name: 01 - Read The TLS Server Private Key from Vault
