@@ -39,7 +39,7 @@
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      path: "le_key"
+      path: "{{ le_key }}"
       auth_method: token
       token: "{{ ansible_password }}"
      register: le_private_key
