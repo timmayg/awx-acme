@@ -2,8 +2,11 @@
 - name: Create a PKCS12 File from a Certificate and Key
   hosts: localhost
   gather_facts: false
+#
+#  ASSURE THAT THERE IS A CERTIFICATE AND KEY IN VAULT WITH THIS NAME !!! 
   vars:
     ssl_cert_fqdn: aaajsnlb.theglens.net
+
 
   tasks:
 

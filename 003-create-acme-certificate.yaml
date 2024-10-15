@@ -180,19 +180,19 @@
 #     register: cloudflare_dns_delete
 
 
-    - name: XX - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
-      community.crypto.openssl_pkcs12:
-        action: export
-        #friendly_name: "{{ fqdn }}"
-        privatekey_path : "{{ fqdn }}.key"
-        certificate_path : "{{ fqdn }}.fullchain"
-        path: pkcs12_file.bin.p12
-        passphrase: "cisco123"
-        state: present
+   - name: XX - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+     community.crypto.openssl_pkcs12:
+       action: export
+       #friendly_name: "{{ fqdn }}"
+       privatekey_path : "{{ fqdn }}.key"
+       certificate_path : "{{ fqdn }}.fullchain"
+       path: pkcs12_file.bin.p12
+       passphrase: "cisco123"
+       state: present
 
 
-    - name: XX - Encode the PKCS12 file to base64 Text
-      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
+   - name: XX - Encode the PKCS12 file to base64 Text
+     ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
 
 
