@@ -154,12 +154,12 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
-
+     when: dns_01_challenge_extract.failed == true
 
    - name: 09 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
-
+     when: dns_01_challenge_extract.failed == true
 
    - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
