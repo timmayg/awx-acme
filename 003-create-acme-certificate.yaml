@@ -74,7 +74,7 @@
    - name: 04 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
        path: "{{ fqdn }}.csr"
-       privatekey_content: "{{ server_private_key.secret.private_key }}"
+       privatekey_content: "{{ server_private_key }}"
        common_name: "{{ fqdn }}"
 
 
