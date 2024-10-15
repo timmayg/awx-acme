@@ -18,7 +18,6 @@
 
 
   tasks:
-
 #
 #   THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
 #
@@ -30,6 +29,11 @@
 #     ansible.builtin.set_fact:
 #       fqdn: "aaa{{ rand }}.theglens.net"
 
+
+   - name: Print
+      ansible.builtin.debug:
+        msg: The fqdn for this certificate will be "{{ fqdn }}". 
+ 
 
 
 
