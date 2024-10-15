@@ -4,11 +4,13 @@
   gather_facts: false
 
   vars:
-   fqdn: "labftd.theglens.net"
-   le_email: "timmayglen@gmail.com"
-   le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
-   le_key: "le_stage_key"
+   fqdn: "lab-ftd.theglens.net"
 #
+#   
+   le_email: "timmayglen@gmail.com"
+#
+   le_key: "le_stage_key"
+   le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
 #   le_key: "le_prod_key"
 #   le_directory: "https://acme-v02.api.letsencrypt.org/directory"
 #
@@ -48,7 +50,7 @@
        privatekey_path: "{{ fqdn }}.key"
 
 
-#   - name: 01 - Read The TLS Server Private Key from Vault
+#   - name: XX - Read The TLS Server Private Key from Vault
 #     community.hashi_vault.vault_kv2_get:
 #      url: "{{ vault_url }}"
 #      engine_mount_point: "{{ vault_mount }}"
@@ -111,21 +113,10 @@
        challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
 
-
-#   - name: 0a - Print
+#   - name: Print 
 #     ansible.builtin.debug:
 #       msg: "{{ challenge_response }}"
 
-
-#  Change this from msg to var
-#   - name: 0a1 - Print
-#     ansible.builtin.debug:
-#       msg: "{{ challenge_response }}"
-
-
-#   - name: 06 - Extract DNS-01 challenge resource_value
-#     ansible.builtin.set_fact:
-#       dns_01_challenge_text: "{{ challenge_response.challenge_data['test-csr.theglens.net']['dns-01'].resource_value }}"
 
 
 
