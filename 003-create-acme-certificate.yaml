@@ -31,10 +31,8 @@
 
 
    - name: Print
-      ansible.builtin.debug:
-        msg: "The fqdn for this certificate will be {{ fqdn }}."
- 
-
+     ansible.builtin.debug:
+       msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
    - name: 01 - Generate a Private Key for the FQDN
@@ -42,6 +40,7 @@
        curve: secp384r1
        type: ECC
        path: "{{ fqdn }}.key"
+
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
