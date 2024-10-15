@@ -35,6 +35,11 @@
        type: ECC
        path: "{{ fqdn }}.key"
 
+   - name: Generate an OpenSSL public key in PEM format
+     community.crypto.openssl_publickey:
+       path: "{{ fqdn }}.pub"
+       privatekey_path: "{{ fqdn }}.key"
+
 
 #   - name: 01 - Read The TLS Server Private Key from Vault
 #     community.hashi_vault.vault_kv2_get:
@@ -202,13 +207,15 @@
        engine_mount_point: "{{ vault_mount }}"
        path: "{{ fqdn }}"
        data:
-         key: "{{ lookup('file', '{{ fqdn }}.key') }}"
+         public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
+         private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
          p12_in_base64: "{{ lookup('file',  'pkcs12_file.p12.txt') }}"
        auth_method: token
        token: "{{ ansible_password }}"
+
 
 
    - name: 12 - Read the New Certificate from Vault, REQD for the next step 
