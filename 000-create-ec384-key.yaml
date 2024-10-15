@@ -28,13 +28,13 @@
        privatekey_path: "{{ key_name }}.key"
 
 
-    - name: Create a new Path and two new key-value pairs in the KV2 engine
-      community.hashi_vault.vault_kv2_write:
-        url: "https://vault.theglens.net:8200"
-        path: "secret_name"
-        auth_method: token
-        token: "{{ ansible_password }}"
-        engine_mount_point: "kv"
-        data: 
-          private_key: "{{ key_name }}.key"
-          public_key: "{{ key_name }}.pub"
+   - name: Create a new Path and two new key-value pairs in the KV2 engine
+     community.hashi_vault.vault_kv2_write:
+       url: "https://vault.theglens.net:8200"
+       path: "secret_name"
+       auth_method: token
+       token: "{{ ansible_password }}"
+       engine_mount_point: "kv"
+       data: 
+         private_key: "{{ key_name }}.key"
+         public_key: "{{ key_name }}.pub"
