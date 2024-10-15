@@ -34,7 +34,7 @@
        curve: secp384r1
        type: ECC
        path: "{{ fqdn }}.key"
-     register: server_private_key
+     register: "{{ fqdn }}_private_key" 
 
 
 #   - name: 01 - Read The TLS Server Private Key from Vault
@@ -75,7 +75,7 @@
    - name: 04 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
        path: "{{ fqdn }}.csr"
-       privatekey_content: "{{ server_private_key }}"
+       privatekey_path: "{{ fqdn }}.key"
        common_name: "{{ fqdn }}"
 
 
