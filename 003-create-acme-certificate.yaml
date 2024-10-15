@@ -169,6 +169,22 @@
 #     register: cloudflare_dns_delete
 
 
+    - name: ~11~ - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+      community.crypto.openssl_pkcs12:
+        action: export
+        friendly_name: "{{ fqdn }}"
+        privatekey_path : XXXXXXXXXXX
+        certificate_path : "{{ fqdn }}.fullchain"
+        path: pkcs12_file.bin.p12
+        passphrase: "cisco123"
+        state: present
+
+    - name: ~12~ - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.txt"
+
+
+
+
    - name: 11 - Write the New Certificate to Vault
      community.hashi_vault.vault_kv2_write:
        url: "{{ vault_url }}"
@@ -178,6 +194,7 @@
          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
+         p12_in_base64: "{{ lookup('file',  '{{ fqdn }}.txt.p12') }}"
        auth_method: token
        token: "{{ ansible_password }}"
 
