@@ -60,7 +60,7 @@
 
 
     - name: 09 - Run a Command - openssl pkcs12 in -- on the local linux host
-      ansible.builtin.command: "openssl pkcs12 -in pkcs12_file.p12 -info -nodes -passin pass:cisco123"
+      ansible.builtin.command: "openssl pkcs12 -in pkcs12_file.bin.p12 -info -nodes -passin pass:cisco123"
       register: command_output
 
 
