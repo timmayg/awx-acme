@@ -133,8 +133,7 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-     register: dns_01_challenge_extract
-     ignore_errors: true
+     when: challenge_response.challenge_data is defined
 
 
 #   - name: Print
@@ -152,12 +151,12 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
-     when: dns_01_challenge_extract.failed == true
+     when: dns_01_challenge_text is defined and dns_01_challenge_fqdn is defined
 
    - name: 09 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
-     when: dns_01_challenge_extract.failed == true
+     when: dns_01_challenge_text is defined and dns_01_challenge_fqdn is defined
 
    - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
