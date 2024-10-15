@@ -50,9 +50,8 @@
         passphrase: "cisco123"
         state: present
 
-    - name: 06 - Encode the PKCS12 file to base64
-      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12"
-
+    - name: 06 - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.txt"
 
 
     - name: 08 - Run a Command -- ls -l -- on the local linux host
