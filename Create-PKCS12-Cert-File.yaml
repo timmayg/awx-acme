@@ -45,20 +45,15 @@
         action: export
         friendly_name: "{{ ssl_cert_fqdn }}"
         passphrase: "cisco123"
-        path: pkcs12_file.p12
+        path: pkcs12_file.bin.p12
         privatekey_path : private_key.pem
         certificate_path : fullchain.pem
         state: present
 
     - name: 06 - Encode the PKCS12 file to base64
       ansible.builtin.command:
-        cmd: "base64 pkcs12_file.p12 -o pkcs12_file_base64.txt"
-      args:
-        removes: pkcs12_file.p12
+        cmd: "base64 pkcs12_file.bin.p12 -o pkcs12_file_base64.txt"
 
-    - name: 07 - Display the base64-encoded PKCS12 file
-      ansible.builtin.debug:
-        msg: "{{ lookup('file', 'pkcs12_file_base64.txt') }}"
 
 
     - name: 08 - Run a Command -- ls -l -- on the local linux host
