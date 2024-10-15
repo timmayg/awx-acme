@@ -21,13 +21,13 @@
 #
 #   THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
 #
-   - name: Generate a random string for use in the FQDN
-     ansible.builtin.set_fact:
-       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
+#   - name: Generate a random string for use in the FQDN
+#     ansible.builtin.set_fact:
+#       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
 #
-   - name: Build the Random Hostname and FQDN
-     ansible.builtin.set_fact:
-       fqdn: "aaa{{ rand }}.theglens.net"
+#   - name: Build the Random Hostname and FQDN
+#     ansible.builtin.set_fact:
+#       fqdn: "aaa{{ rand }}.theglens.net"
 
 
    - name: Print
@@ -106,6 +106,10 @@
      register: challenge_response
 
 
+    - name: XX - Capture the ACME Challenge Response
+      set_fact:
+        challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
+
 
 
 #   - name: 0a - Print
@@ -133,7 +137,7 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-     when: challenge_response.challenge_data.get(fqdn, False)
+     when: challenge_status == 'pending'
 
 
 #   - name: Print
@@ -151,11 +155,12 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
-
+     when: challenge_status == 'pending'
 
    - name: 09 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
+     when: challenge_status == 'pending'  
 
    - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
