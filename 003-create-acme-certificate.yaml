@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-   fqdn: "labftd.theglens.net"
+   fqdn: "labftda.theglens.net"
    le_email: "timmayglen@gmail.com"
    le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
    le_key: "le_stage_key"
