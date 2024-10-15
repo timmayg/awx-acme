@@ -32,7 +32,7 @@
 
    - name: Print
       ansible.builtin.debug:
-        msg: "The fqdn for this certificate will be {{ fqdn }}". 
+        msg: "The fqdn for this certificate will be {{ fqdn }}."
  
 
 
