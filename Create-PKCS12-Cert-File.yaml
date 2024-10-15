@@ -51,8 +51,7 @@
         state: present
 
     - name: 06 - Encode the PKCS12 file to base64
-      ansible.builtin.command:
-        cmd: "base64 pkcs12_file.bin.p12 -o pkcs12_file_base64.txt"
+      ansible.builtin.command: "base64 pkcs12_file.bin.p12 -o pkcs12_file_base64.txt"
 
 
 
