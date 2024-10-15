@@ -183,7 +183,7 @@
     - name: XX - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
         action: export
-        friendly_name: "{{ fqdn }}"
+        #friendly_name: "{{ fqdn }}"
         privatekey_path : "{{ fqdn }}.key"
         certificate_path : "{{ fqdn }}.fullchain"
         path: pkcs12_file.bin.p12

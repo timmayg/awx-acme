@@ -47,7 +47,7 @@
         privatekey_path : private_key.pem
         certificate_path : fullchain.pem
         path: pkcs12_file.bin.p12
-        passphrase: "cisco123"
+        passphrase: "{{ fqdn }}"
         state: present
 
     - name: 06 - Encode the PKCS12 file to base64 Text
