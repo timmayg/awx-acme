@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-   fqdna: "lab-ftd.theglens.net"
+   fqdn: "labftd.theglens.net"
    le_email: "timmayglen@gmail.com"
    le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
    le_key: "le_stage_key"
@@ -26,7 +26,7 @@
 
    - name: Build the Random Hostname and FQDN
      ansible.builtin.set_fact:
-       fqdn: "aaa{{ rand }}.theglens.net"
+       fqdna: "aaa{{ rand }}.theglens.net"
 
    - name: print the fqdn
      ansible.builtin.debug:
