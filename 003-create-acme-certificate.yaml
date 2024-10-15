@@ -193,7 +193,7 @@
        state: absent    # present (default), absent
        zone: theglens.net
 #     register: cloudflare_dns_delete
-
+      when: challenge_status == 'pending'
 
    - name: 12 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
      community.crypto.openssl_pkcs12:
