@@ -1,0 +1,40 @@
+---
+- name: Create a PKCS12 File from a Certificate and Key
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Obtain the Private Key from Vault
+      community.hashi_vault.vault_kv2_get:
+        url: "https://vault.theglens.net:8200"
+        path: "generic_use_ec384_keys"
+        auth_method: token
+        token: "{{ ansible_password }}"
+        engine_mount_point: "kv"
+      register: private_key
+
+    - name: Display the results
+      ansible.builtin.debug:
+        msg:
+          - "Full response: {{ private_key.raw }}"
+          - "Secret: {{ private_key.secret }}"
+          - "Data: {{ private_key.data }} (contains secret data & metadata in kv2)"
+          - "Metadata: {{ private_key.metadata }}"
+
+
+
+    - name: TIMMAY Stop the Playbool
+      ansible.builtin.meta: end_play
+
+
+
+    - name: Obtain the Full Chain from Vault
+      community.hashi_vault.vault_kv2_get:
+        url: "https://vault.theglens.net:8200"
+        path: "testkv"
+        auth_method: token
+        token: "{{ ansible_password }}"
+        engine_mount_point: "kv"
+      register: full_chain
+
+
