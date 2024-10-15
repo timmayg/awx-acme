@@ -133,7 +133,7 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-     when: challenge_response.challenge_data is defined
+     when: challenge_response.challenge_data.get(fqdn, False)
 
 
 #   - name: Print
