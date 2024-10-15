@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "le_stage_key"      # options: le_stage_key, le_prod_key
+   vault_secret: "le_prod_key"      # options: le_stage_key, le_prod_key
 
   tasks:
 
