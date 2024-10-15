@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "le_prod_key"      # options: le_stage_key, le_prod_key
+   vault_secret: "le_stage_key"      # options: le_stage_key, le_prod_key
 
   tasks:
 
@@ -26,7 +26,8 @@
 
    - name: 03 - Check whether an account with the given account key exists
      community.crypto.acme_account_info:
-      account_key_src: "~/le_private_key.pem"
+#      account_key_src: "~/le_private_key.pem"
+      account_key_content: "{{ response.secret.private_key }}"
       acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
       acme_version: 2
      register: account_data
