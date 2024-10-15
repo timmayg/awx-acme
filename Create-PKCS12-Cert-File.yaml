@@ -50,12 +50,6 @@
         certificate_path : fullchain.pem
         state: present
 
-     - name: 05a - Parse the PKCS12 File
-       community.crypto.openssl_pkcs12:
-        passphrase: "cisco123"
-        path: pkcs12_file.p12
-        state: present
-
 
     - name: 06 - Run a Command on the local linux host
       ansible.builtin.command: "ls -l"
