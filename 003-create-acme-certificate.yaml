@@ -32,6 +32,7 @@
    - name: Generate a Private Key for the FQDN
      community.crypto.openssl_privatekey:
        curve: secp384r1
+       type: ECC
        path: "{{ fqdn }}.key"
      register: server_private_key
 
