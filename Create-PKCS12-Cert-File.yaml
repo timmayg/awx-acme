@@ -51,6 +51,15 @@
         state: present
 
 
+   - name: 06 - Run a Command on the local linux host
+      ansible.builtin.command: "ls -l"
+      register: command_output
+
+
+   - name: 08 - Run a Command on the local linux host
+      ansible.builtin.command: "openssl pkcs12 -in pkcs12_file.p12 -info -passin pass:cisco123"
+      register: command_output
+
 
 
     - name: TIMMAY Stop the Playbool
