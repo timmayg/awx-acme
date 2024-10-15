@@ -45,7 +45,6 @@
         action: export
         friendly_name: "{{ ssl_cert_fqdn }}"
         passphrase: "cisco123"
-        privatekey_passphrase : "cisco123"
         path: pkcs12_file.p12
         privatekey_path : private_key.pem
         certificate_path : fullchain.pem
