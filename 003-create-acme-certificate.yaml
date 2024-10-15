@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-   fqdn: "labftda.theglens.net"
+   fqdn: "labftd.theglens.net"
    le_email: "timmayglen@gmail.com"
    le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
    le_key: "le_stage_key"
@@ -134,7 +134,7 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-
+     ignore_errors: true
 
 
 #   - name: Print
