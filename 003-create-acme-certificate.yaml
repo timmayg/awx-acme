@@ -143,8 +143,6 @@
 #       msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
 
 
-
-
    - name: 08 - Create DNS TXT record with value "unique value"
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
