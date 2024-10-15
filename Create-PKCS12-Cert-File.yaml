@@ -16,10 +16,11 @@
     - name: Display the results
       ansible.builtin.debug:
         msg:
-          - "Full response: {{ private_key.raw }}"
-          - "Secret: {{ private_key.secret }}"
-          - "Data: {{ private_key.data }} (contains secret data & metadata in kv2)"
-          - "Metadata: {{ private_key.metadata }}"
+          - "Private Key: {{ private_key.data.data.private_key }}"
+#          - "Full response: {{ private_key.raw }}"
+#          - "Secret: {{ private_key.secret }}"
+#          - "Data: {{ private_key.data }} (contains secret data & metadata in kv2)"
+#          - "Metadata: {{ private_key.metadata }}"
 
 
 
