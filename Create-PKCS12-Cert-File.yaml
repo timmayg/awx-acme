@@ -40,7 +40,7 @@
         mode: 0600
 
 
-    - name: 05 - Create the PKCS12 File using Community Crypto OpenSSL_Pkcs12
+    - name: 05 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
         action: export
         friendly_name: "{{ ssl_cert_fqdn }}"
@@ -49,6 +49,12 @@
         privatekey_path : private_key.pem
         certificate_path : fullchain.pem
         state: present
+
+     - name: 05a - Parse the PKCS12 File
+       community.crypto.openssl_pkcs12:
+         action: parse
+         path: pkcs12_file.p12
+
 
 
     - name: 06 - Run a Command on the local linux host
