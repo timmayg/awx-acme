@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-   fqdn: "lab-ftd.theglens.net"
+   fqdna: "lab-ftd.theglens.net"
    le_email: "timmayglen@gmail.com"
    le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
    le_key: "le_stage_key"
@@ -31,6 +31,10 @@
    - name: print the fqdn
      ansible.builtin.debug:
        msg: "{{ fqdn }}"
+
+   - name: print the fqdn
+     ansible.builtin.debug:
+       msg: "{{ fqdna }}"
 
 
 
