@@ -19,33 +19,27 @@
 
   tasks:
 
-   - name: Generate a random string for use in the FQDN
-     ansible.builtin.set_fact:
-       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
-
-
-   - name: Build the Random Hostname and FQDN
-     ansible.builtin.set_fact:
-       fqdna: "aaa{{ rand }}.theglens.net"
-
-   - name: print the fqdn
-     ansible.builtin.debug:
-       msg: "{{ fqdn }}"
-
-   - name: print the fqdn
-     ansible.builtin.debug:
-       msg: "{{ fqdna }}"
+#
+#   THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
+#
+#   - name: Generate a random string for use in the FQDN
+#     ansible.builtin.set_fact:
+#       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
+#
+#   - name: Build the Random Hostname and FQDN
+#     ansible.builtin.set_fact:
+#       fqdn: "aaa{{ rand }}.theglens.net"
 
 
 
 
-   - name: Generate a Private Key for the FQDN
+   - name: 01 - Generate a Private Key for the FQDN
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
        path: "{{ fqdn }}.key"
 
-   - name: Generate an OpenSSL public key in PEM format
+   - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
        path: "{{ fqdn }}.pub"
        privatekey_path: "{{ fqdn }}.key"
@@ -62,7 +56,7 @@
 #     register: server_private_key
 
 
-   - name: 02 - Read The Let's Encrypt Private Key from Vault
+   - name: 03 - Read The Let's Encrypt Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
@@ -72,7 +66,7 @@
      register: le_private_key
 
 
-   - name: 03 - Read The Cloudflare API Key from Vault
+   - name: 04 - Read The Cloudflare API Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
@@ -86,14 +80,14 @@
 #       msg: "{{ server_private_key.secret.private_key }}"
 
 
-   - name: 04 - Generate an OpenSSL Certificate Signing Request
+   - name: 05 - Generate an OpenSSL Certificate Signing Request
      community.crypto.openssl_csr:
        path: "{{ fqdn }}.csr"
        privatekey_path: "{{ fqdn }}.key"
        common_name: "{{ fqdn }}"
 
 
-   - name: 05 - Create an ACME Challenge
+   - name: 06 - Create an ACME Challenge
      community.crypto.acme_certificate:
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -128,10 +122,11 @@
 
 
 
-
-
-
-   - name: 06 - Extract FQDN and DNS Challenge Text from ACME Response
+#
+#
+#   THIS TASK NEEDS TO BE FIXED. THIS BREAKS WHEN A dash is in the FQDN
+#
+   - name: 07 - Extract FQDN and DNS Challenge Text from ACME Response
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
@@ -146,7 +141,7 @@
 
 
 
-   - name: 07 - Create DNS TXT record with value "unique value"
+   - name: 08 - Create DNS TXT record with value "unique value"
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
@@ -157,12 +152,12 @@
      register: cloudflare_dns_create
 
 
-   - name: 08 - Pause the Playbook for 20 seconds
+   - name: 09 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
 
 
-   - name: 09 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
+   - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -185,7 +180,7 @@
 #     register: cert_file
 
 
-   - name: 10 - Delete the DNS TXT record (if it exists)
+   - name: 11 - Delete the DNS TXT record (if it exists)
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
@@ -195,7 +190,7 @@
 #     register: cloudflare_dns_delete
 
 
-   - name: XX - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+   - name: 12 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
      community.crypto.openssl_pkcs12:
        action: export
        friendly_name: "{{ fqdn }}"
@@ -206,12 +201,12 @@
        state: present
 
 
-   - name: XX - Encode the PKCS12 file to base64 Text
+   - name: 13 - Encode the PKCS12 file to base64 Text
      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
 
 
-   - name: 11 - Write the New Certificate to Vault
+   - name: 14 - Write the New Certificate to Vault
      community.hashi_vault.vault_kv2_write:
        url: "{{ vault_url }}"
        engine_mount_point: "{{ vault_mount }}"
@@ -228,7 +223,7 @@
 
 
 
-   - name: 12 - Read the New Certificate from Vault, REQD for the next step 
+   - name: 15 - Read the New Certificate from Vault, REQD for the next step 
      community.hashi_vault.vault_kv2_get:
        url: "{{ vault_url }}"
        engine_mount_point: "{{ vault_mount }}"
@@ -238,7 +233,7 @@
      register: current
 
 
-   - name: 13 - Append the Public Key to Vault Secret
+   - name: 16 - Append the Public Key to Vault Secret
      vars:
        values_to_update:
           fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
