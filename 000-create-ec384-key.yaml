@@ -20,12 +20,12 @@
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
-       path: "{{ key_name }}.key"
+       path: "{{ secret_name }}.key"
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
-       path: "{{ key_name }}.pub"
-       privatekey_path: "{{ key_name }}.key"
+       path: "{{ secret_name }}.pub"
+       privatekey_path: "{{ secret_name }}.key"
 
 
    - name: Create a new Path and two new key-value pairs in the KV2 engine
@@ -36,5 +36,5 @@
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
        data: 
-         private_key: "{{ key_name }}.key"
-         public_key: "{{ key_name }}.pub"
+         private_key: "{{ secret_name }}.key"
+         public_key: "{{ secret_name }}.pub"
