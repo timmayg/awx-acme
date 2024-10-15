@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   vars:
-    ssl_cert_fqdn: lab-ftd.theglens.net
+    ssl_cert_fqdn: test-ag.theglens.net
 
   tasks:
 
