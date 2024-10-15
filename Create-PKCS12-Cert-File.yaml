@@ -61,12 +61,12 @@
         msg: "{{ lookup('file', 'pkcs12_file_base64.txt') }}"
 
 
-    - name: 06 - Run a Command on the local linux host
+    - name: 08 - Run a Command -- ls -l -- on the local linux host
       ansible.builtin.command: "ls -l"
       register: command_output
 
 
-    - name: 07 - Run a Command on the local linux host
+    - name: 09 - Run a Command - openssl pkcs12 in -- on the local linux host
       ansible.builtin.command: "openssl pkcs12 -in pkcs12_file.p12 -info -nodes -passin pass:cisco123"
       register: command_output
 
