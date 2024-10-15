@@ -106,9 +106,9 @@
      register: challenge_response
 
 
-    - name: XX - Capture the ACME Challenge Response
-      set_fact:
-        challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
+   - name: XX - Capture the ACME Challenge Response
+     ansible.builtin.set_fact:
+       challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
 
 
