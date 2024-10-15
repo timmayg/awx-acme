@@ -1,0 +1,40 @@
+---
+- name: Create a new ACME account with Let's Encrypt Staging
+  hosts: localhost
+
+  vars:
+    secret_name: "ec384_key_write_test"
+#
+#
+    vault_url: "https://vault.theglens.net:8200"
+    vault_mount: "kv"
+  
+  tasks:
+
+#
+#  This Task will create a 4096 bit key.
+#  Key will be stored in AWX home director.
+#
+
+   - name: 01 - Generate a Private Key for the FQDN
+     community.crypto.openssl_privatekey:
+       curve: secp384r1
+       type: ECC
+       path: "{{ key_name }}.key"
+
+   - name: 02 - Generate an OpenSSL public key in PEM format
+     community.crypto.openssl_publickey:
+       path: "{{ key_name }}.pub"
+       privatekey_path: "{{ key_name }}.key"
+
+
+    - name: Create a new Path and two new key-value pairs in the KV2 engine
+      community.hashi_vault.vault_kv2_write:
+        url: "https://vault.theglens.net:8200"
+        path: "secret_name"
+        auth_method: token
+        token: "{{ ansible_password }}"
+        engine_mount_point: "kv"
+        data: 
+          private_key: "{{ key_name }}.key"
+          public_key: "{{ key_name }}.pub"
