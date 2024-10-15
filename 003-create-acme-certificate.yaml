@@ -133,6 +133,7 @@
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
+     register: dns_01_challenge_extract
      ignore_errors: true
 
 
@@ -175,7 +176,7 @@
        remaining_days: 60
        data: "{{ challenge_response }}"
      register: certificate_response
-#     when: sample_com_challenge is changed
+     when: dns_01_challenge_extract.failed == true
 
 
 #   - name: cat the cert file
