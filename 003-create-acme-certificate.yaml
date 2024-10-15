@@ -21,13 +21,13 @@
 #
 #   THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
 #
-#   - name: Generate a random string for use in the FQDN
-#     ansible.builtin.set_fact:
-#       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
+   - name: Generate a random string for use in the FQDN
+     ansible.builtin.set_fact:
+       rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
 #
-#   - name: Build the Random Hostname and FQDN
-#     ansible.builtin.set_fact:
-#       fqdn: "aaa{{ rand }}.theglens.net"
+   - name: Build the Random Hostname and FQDN
+     ansible.builtin.set_fact:
+       fqdn: "aaa{{ rand }}.theglens.net"
 
 
    - name: Print
@@ -90,7 +90,7 @@
        common_name: "{{ fqdn }}"
 
 
-   - name: 06 - Create an ACME Challenge
+   - name: 06 - Create the initial ACME Challenge
      community.crypto.acme_certificate:
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
@@ -151,12 +151,11 @@
        state: present    # present (default), absent
        zone: theglens.net
      register: cloudflare_dns_create
-     when: dns_01_challenge_text is defined and dns_01_challenge_fqdn is defined
+
 
    - name: 09 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
-     when: dns_01_challenge_text is defined and dns_01_challenge_fqdn is defined
 
    - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
@@ -173,7 +172,7 @@
        remaining_days: 60
        data: "{{ challenge_response }}"
      register: certificate_response
-     when: dns_01_challenge_extract.failed == true
+
 
 
 #   - name: cat the cert file
