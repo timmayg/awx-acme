@@ -50,6 +50,16 @@
         certificate_path : fullchain.pem
         state: present
 
+    - name: 06 - Encode the PKCS12 file to base64
+      ansible.builtin.command:
+        cmd: "base64 pkcs12_file.p12 -o pkcs12_file_base64.txt"
+      args:
+        removes: pkcs12_file.p12
+
+    - name: 07 - Display the base64-encoded PKCS12 file
+      ansible.builtin.debug:
+        msg: "{{ lookup('file', 'pkcs12_file_base64.txt') }}"
+
 
     - name: 06 - Run a Command on the local linux host
       ansible.builtin.command: "ls -l"
