@@ -4,7 +4,10 @@
   gather_facts: false
   tasks:
 
-    - name: Obtain the Private Key from Vault
+  vars:
+    ssl_cert_fqdn: "lab-ftd.theglens.net"
+
+    - name: 01 - Obtain the Private Key from Vault
       community.hashi_vault.vault_kv2_get:
         url: "https://vault.theglens.net:8200"
         path: "generic_use_ec384_keys"
@@ -13,36 +16,42 @@
         engine_mount_point: "kv"
       register: private_key
 
-    - name: Display the results
-      ansible.builtin.debug:
-        msg:
-          - "Private Key: {{ private_key.data.data.private_key }}"
-#          - "Full response: {{ private_key.raw }}"
-#          - "Secret: {{ private_key.secret }}"
-#          - "Data: {{ private_key.data }} (contains secret data & metadata in kv2)"
-#          - "Metadata: {{ private_key.metadata }}"
 
-    - name: Write the Private Key to a file
+    - name: 02 - Write the Private Key to a file
       ansible.builtin.copy:
         content: "{{ private_key.data.data.private_key }}"
         dest: "private_key.pem"
         mode: 0600
 
 
-    - name: Obtain the Full Chain from Vault
+    - name: 03 - Obtain the Full Chain from Vault
       community.hashi_vault.vault_kv2_get:
         url: "https://vault.theglens.net:8200"
-        path: "test-ag.theglens.net"
+        path: "{{ ssl_cert_fqdn }}"
         auth_method: token
         token: "{{ ansible_password }}"
         engine_mount_point: "kv"
       register: full_chain
 
-    - name: Write the Full Chain to a file
+    - name: 04 - Write the Full Chain to a file
       ansible.builtin.copy:
         content: "{{ full_chain.data.data.fullchain }}"
         dest: "fullchain.pem"
         mode: 0600
+
+
+    - name: 05 - Create the PKCS12 File using Community Crypto OpenSSL_Pkcs12
+      community.crypto.openssl_pkcs12:
+        action: export
+        friendly_name: "{{ ssl_cert_fqdn }}"
+        passphrase: "cisco123"
+        privatekey_passphrase : "cisco123"
+        path: pkcs12_file.p12
+        privatekey_path : private_key.pem
+        certificate_path : fullchain.pem
+        state: present
+
+
 
 
     - name: TIMMAY Stop the Playbool
