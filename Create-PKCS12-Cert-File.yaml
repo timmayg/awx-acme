@@ -22,20 +22,30 @@
 #          - "Data: {{ private_key.data }} (contains secret data & metadata in kv2)"
 #          - "Metadata: {{ private_key.metadata }}"
 
-
-
-    - name: TIMMAY Stop the Playbool
-      ansible.builtin.meta: end_play
-
+    - name: Write the Private Key to a file
+      ansible.builtin.copy:
+        content: "{{ private_key.data.data.private_key }}"
+        dest: "private_key.pem"
+        mode: 0600
 
 
     - name: Obtain the Full Chain from Vault
       community.hashi_vault.vault_kv2_get:
         url: "https://vault.theglens.net:8200"
-        path: "testkv"
+        path: "test-ag.theglens.net"
         auth_method: token
         token: "{{ ansible_password }}"
         engine_mount_point: "kv"
       register: full_chain
+
+    - name: Write the Full Chain to a file
+      ansible.builtin.copy:
+        content: "{{ full_chain.data.data.fullchain }}"
+        dest: "fullchain.pem"
+        mode: 0600
+
+
+    - name: TIMMAY Stop the Playbool
+      ansible.builtin.meta: end_play
 
 
