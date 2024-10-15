@@ -34,7 +34,6 @@
        curve: secp384r1
        type: ECC
        path: "{{ fqdn }}.key"
-     register: "{{ fqdn }}_private_key" 
 
 
 #   - name: 01 - Read The TLS Server Private Key from Vault
