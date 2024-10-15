@@ -2,15 +2,20 @@
 - name: Create a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: false
+
   vars:
-   vault_url: "https://vault.theglens.net:8200"
-   vault_mount: "kv"
    fqdn: "lab-ftd.theglens.net"
    le_email: "timmayglen@gmail.com"
    le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
    le_key: "le_stage_key"
+#
 #   le_key: "le_prod_key"
 #   le_directory: "https://acme-v02.api.letsencrypt.org/directory"
+#
+   vault_url: "https://vault.theglens.net:8200"
+   vault_mount: "kv"
+
+
 
   tasks:
 
@@ -24,15 +29,22 @@
        fqdn: "aaa{{ rand }}.theglens.net"
 
 
-   - name: 01 - Read The TLS Server Private Key from Vault
-     community.hashi_vault.vault_kv2_get:
-      url: "{{ vault_url }}"
-      engine_mount_point: "{{ vault_mount }}"
-      path: generic_use_ec384_keys
-      #path: "{{ fqdn | replace('.', '_') }}_keys"
-      auth_method: token
-      token: "{{ ansible_password }}"
+   - name: Generate a Private Key for the FQDN
+     community.crypto.openssl_privatekey:
+       curve: secp384r1
+       path: "{{ fqdn }}.key"
      register: server_private_key
+
+
+#   - name: 01 - Read The TLS Server Private Key from Vault
+#     community.hashi_vault.vault_kv2_get:
+#      url: "{{ vault_url }}"
+#      engine_mount_point: "{{ vault_mount }}"
+#      path: generic_use_ec384_keys
+#      #path: "{{ fqdn | replace('.', '_') }}_keys"
+#      auth_method: token
+#      token: "{{ ansible_password }}"
+#     register: server_private_key
 
 
    - name: 02 - Read The Let's Encrypt Private Key from Vault
@@ -173,7 +185,7 @@
       community.crypto.openssl_pkcs12:
         action: export
         friendly_name: "{{ fqdn }}"
-        privatekey_path : XXXXXXXXXXX
+        privatekey_path : "{{ server_private_key }}"
         certificate_path : "{{ fqdn }}.fullchain"
         path: pkcs12_file.bin.p12
         passphrase: "cisco123"
@@ -191,6 +203,7 @@
        engine_mount_point: "{{ vault_mount }}"
        path: "{{ fqdn }}"
        data:
+         key: "{{ lookup('file', '{{ fqdn }}.key') }}"
          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
          fullchain: "{{ lookup('file',  '{{ fqdn }}.fullchain') }}"
