@@ -2,10 +2,10 @@
 - name: Create a PKCS12 File from a Certificate and Key
   hosts: localhost
   gather_facts: false
-  tasks:
-
   vars:
     ssl_cert_fqdn: "lab-ftd.theglens.net"
+
+  tasks:
 
     - name: 01 - Obtain the Private Key from Vault
       community.hashi_vault.vault_kv2_get:
