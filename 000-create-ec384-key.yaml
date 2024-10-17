@@ -18,7 +18,6 @@
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
-       path: "~/{{ secret_name }}.key"
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
