@@ -16,7 +16,6 @@
 
    - name: 01 - Generate the Private Key
      community.crypto.openssl_privatekey:
-       size: 4096
        type: RSA
        path: "private.key"
 
