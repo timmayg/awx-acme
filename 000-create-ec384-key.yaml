@@ -3,7 +3,7 @@
   hosts: localhost
 
   vars:
-    secret_name: "test-right-now"
+    secret_name: "test-right-now.key"
 #
 #
     vault_url: "https://vault.theglens.net:8200"
@@ -14,12 +14,12 @@
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
-       path: "{{ secret_name }}.key"
+       path: "test-right-now.key"
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
-       path: "{{ secret_name }}.pub"
-       privatekey_path: "{{ secret_name }}.key"
+       path: "test-right-now.pub"
+       privatekey_path: "test-right-now.key"
 
 
    - name: Create a new Path and two new key-value pairs in the KV2 engine
@@ -30,5 +30,5 @@
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
        data: 
-         private_key: "{{ secret_name }}.key"
-         public_key: "{{ secret_name }}.pub"
+         private_key: "test-right-now.key"
+         public_key: "test-right-now.pub"
