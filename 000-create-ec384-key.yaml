@@ -12,18 +12,18 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v1.0.1"
+       msg: "v2.0"
 
    - name: 01 - Generate a Private Key for the FQDN
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
-       path: "~/filename.key"
+       path: "~/private.key"
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
-       path: "{{ secret_name }}.pub"
-       privatekey_path: "{{ secret_name }}.key"
+       path: "public.key"
+       privatekey_path: "private.key"
 
 
    - name: Create a new Path and two new key-value pairs in the KV2 engine
@@ -34,5 +34,5 @@
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
        data: 
-         private_key: "{{ secret_name }}.key"
-         public_key: "{{ secret_name }}.pub"
+         private_key: "private.key"
+         public_key: "public.pub"
