@@ -2,8 +2,7 @@
 - name: Create an EC384 Key and store it in Vault
   hosts: localhost
 
-  vars:
-    secret_name: "test-right-now-ec"
+
 #
 #
     vault_url: "https://vault.theglens.net:8200"
