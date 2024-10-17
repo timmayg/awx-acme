@@ -15,7 +15,7 @@
      community.crypto.openssl_privatekey:
        type: RSA
        #size: 4096
-       path: "~/private.key"
+       path: "private.key"
 
 
    - name: 02 - Extract the Public Key
