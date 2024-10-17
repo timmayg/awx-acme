@@ -3,9 +3,6 @@
   hosts: localhost
   gather_facts: false
   vars:
-    secret_name: "test-right-now4"
-#
-#
     vault_url: "https://vault.theglens.net:8200"
     vault_mount: "kv"
   
@@ -30,7 +27,7 @@
    - name: Create a new secret and store the two keys
      community.hashi_vault.vault_kv2_write:
        url: "https://vault.theglens.net:8200"
-       path: "{{ secret_name }}"
+       path: "{{ key_name }}"
        auth_method: token
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
