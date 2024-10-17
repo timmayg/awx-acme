@@ -19,6 +19,7 @@
        type: RSA
        path: "private.key"
 
+
    - name: 02 - Extract the Public Key
      community.crypto.openssl_publickey:
        path: "public.key"
