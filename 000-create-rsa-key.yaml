@@ -14,7 +14,7 @@
      ansible.builtin.debug:
        msg: "v2.2"
 
-   - name: 01 - Generate the Private Key
+   - name: 01 - Generate a 4096 bit RSA Private Key
      community.crypto.openssl_privatekey:
        type: RSA
        size: 4096
