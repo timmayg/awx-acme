@@ -9,7 +9,7 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v2.2"
+       msg: "v2.3"
 
    - name: 01 - Generate a 4096 bit RSA Private Key
      community.crypto.openssl_privatekey:
