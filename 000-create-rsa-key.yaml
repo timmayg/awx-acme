@@ -9,13 +9,13 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v2.4"
+       msg: "v2.5"
 
    - name: 01 - Generate a 4096 bit RSA Private Key
      community.crypto.openssl_privatekey:
        type: RSA
        #size: 4096
-       path: "private.key"
+       path: "~/private.key"
 
 
    - name: 02 - Extract the Public Key
