@@ -14,7 +14,11 @@
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
+<<<<<<< Updated upstream
        path: "{{ secret_name }}.key"
+=======
+       path: "~/filename.key"
+>>>>>>> Stashed changes
 
    - name: 02 - Generate an OpenSSL public key in PEM format
      community.crypto.openssl_publickey:
