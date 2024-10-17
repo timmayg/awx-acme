@@ -32,7 +32,7 @@
 
     - name: Create ACME account
       community.crypto.acme_account:
-        account_key_src: ~/private_key.pem
+        account_key_src: ~/le_private_key.pem
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
