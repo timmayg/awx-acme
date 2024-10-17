@@ -12,7 +12,7 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v1.0.0"
+       msg: "v1.0.1"
 
    - name: 01 - Generate a Private Key for the FQDN
      community.crypto.openssl_privatekey:
