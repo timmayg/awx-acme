@@ -3,19 +3,13 @@
   hosts: localhost
 
   vars:
-    secret_name: "ec384_key_write_test"
+    secret_name: "test-right-now"
 #
 #
     vault_url: "https://vault.theglens.net:8200"
     vault_mount: "kv"
   
   tasks:
-
-#
-#  This Task will create a 4096 bit key.
-#  Key will be stored in AWX home director.
-#
-
    - name: 01 - Generate a Private Key for the FQDN
      community.crypto.openssl_privatekey:
        curve: secp384r1
