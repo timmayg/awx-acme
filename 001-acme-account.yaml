@@ -15,7 +15,7 @@
         path: "{{ vault_secret }}"
         auth_method: token
         token: "{{ ansible_password }}"
-        version: 1
+        #dversion: 1
       register: response
 
 #    - name: Print the Private Key
