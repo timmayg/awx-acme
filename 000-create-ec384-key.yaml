@@ -12,7 +12,7 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v2.1"
+       msg: "v2.2"
 
    - name: 01 - Generate the Private Key
      community.crypto.openssl_privatekey:
@@ -38,4 +38,3 @@
          private_key: "{{ lookup('file', 'private.key') }}"
 
 
-         

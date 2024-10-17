@@ -1,12 +1,40 @@
 ---
-- name: Create a new ACME account with Let's Encrypt Staging
+- name: Create an 4096 bit Key and store it in Vault
   hosts: localhost
+  facts: false
+  vars:
+    secret_name: "test-right-now"
+#
+#
+    vault_url: "https://vault.theglens.net:8200"
+    vault_mount: "kv"
+  
   tasks:
+   - name: print a message
+     ansible.builtin.debug:
+       msg: "v2.2"
 
-#
-#  This Task will create a 4096 bit key.
-#  Key will be stored in AWX home director.
-#
-    - name: Generate an OpenSSL private key with the default values (4096 bits, RSA) and a passphrase
-      community.crypto.openssl_privatekey:
-        path: ~/awx-key.pem
+   - name: 01 - Generate the Private Key
+     community.crypto.openssl_privatekey:
+       size: 4096
+       type: RSA
+       path: "private.key"
+
+   - name: 02 - Extract the Public Key
+     community.crypto.openssl_publickey:
+       path: "public.key"
+       privatekey_path: "private.key"
+
+
+   - name: Create a new secret and store the two keys
+     community.hashi_vault.vault_kv2_write:
+       url: "https://vault.theglens.net:8200"
+       path: "{{ secret_name }}"
+       auth_method: token
+       token: "{{ ansible_password }}"
+       engine_mount_point: "kv"
+       data: 
+         public_key: "{{ lookup('file', 'public.key') }}"
+         private_key: "{{ lookup('file', 'private.key') }}"
+
+
