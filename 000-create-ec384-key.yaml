@@ -34,5 +34,8 @@
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
        data: 
-         private_key: "private.key"
-         public_key: "public.pub"
+         public_key: "{{ lookup('file', 'public.key') }}"
+         private_key: "{{ lookup('file', 'private.key') }}"
+
+
+         
