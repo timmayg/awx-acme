@@ -1,7 +1,7 @@
 ---
 - name: Create an 4096 bit Key and store it in Vault
   hosts: localhost
-  facts: false
+  gather_facts: false 
   vars:
     secret_name: "test-right-now4"
 #
