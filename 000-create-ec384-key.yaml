@@ -14,7 +14,7 @@
      ansible.builtin.debug:
        msg: "v2.2"
 
-   - name: 01 - Generate the Private Key
+   - name: 01 - Generate a EC384 bit ECC Private Key
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
