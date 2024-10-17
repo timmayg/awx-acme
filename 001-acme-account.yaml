@@ -5,7 +5,7 @@
   vars: 
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "test999"
+   vault_secret: "testkey999"
 
   tasks:
     - name: Read The Let's Encrypt Private Key from Vault
@@ -15,7 +15,7 @@
         path: "{{ vault_secret }}"
         auth_method: token
         token: "{{ ansible_password }}"
-        #dversion: 1
+        version: 1
       register: response
 
 #    - name: Print the Private Key
