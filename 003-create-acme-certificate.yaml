@@ -45,17 +45,6 @@
        privatekey_path: "{{ fqdn }}.key"
 
 
-#   - name: XX - Read The TLS Server Private Key from Vault
-#     community.hashi_vault.vault_kv2_get:
-#      url: "{{ vault_url }}"
-#      engine_mount_point: "{{ vault_mount }}"
-#      path: generic_use_ec384_keys
-#      #path: "{{ fqdn | replace('.', '_') }}_keys"
-#      auth_method: token
-#      token: "{{ ansible_password }}"
-#     register: server_private_key
-
-
    - name: 03 - Read The Let's Encrypt Private Key from Vault
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
@@ -64,6 +53,16 @@
       auth_method: token
       token: "{{ ansible_password }}"
      register: le_private_key
+
+   - name: XXXX - Check whether an account with the given account key exists
+     community.crypto.acme_account_info:
+      account_key_content: "{{ le_private_key.secret.private_key }}"
+      acme_directory: "{{ acme_directory }}"
+      acme_version: 2
+     register: account_data
+
+   - name: HARD STOP
+     ansible.builtin.meta: end_play
 
 
    - name: 04 - Read The Cloudflare API Key from Vault
@@ -85,6 +84,8 @@
        path: "{{ fqdn }}.csr"
        privatekey_path: "{{ fqdn }}.key"
        common_name: "{{ fqdn }}"
+
+
 
 
    - name: 06 - Create the initial ACME Challenge
