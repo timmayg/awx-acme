@@ -4,15 +4,10 @@
   gather_facts: false
 
   vars:
-   fqdn: "lab-ftd.theglens.net"
 #
 #   
    le_email: "timmayglen@gmail.com"
 #
-   le_key: "le_stage_key"
-   le_directory: "https://acme-staging-v02.api.letsencrypt.org/directory"
-#   le_key: "le_prod_key"
-#   le_directory: "https://acme-v02.api.letsencrypt.org/directory"
 #
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
