@@ -49,11 +49,11 @@
 
 
 
-    - name: 04 - Write the private key to a file
-      ansible.builtin.copy:
-        content: "{{ response.secret.private_key }}"
-        dest: ~/le_private_key.pem
-        mode: '0600'
+#    - name: 04 - Write the private key to a file
+#      ansible.builtin.copy:
+#        content: "{{ response.secret.private_key }}"
+#        dest: ~/le_private_key.pem
+#s        mode: '0600'
 
 
     - name: 05 - Create ACME account
