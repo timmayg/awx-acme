@@ -43,7 +43,7 @@
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      path: "{{ le_key }}"
+      path: "{{ key_name }}"
       auth_method: token
       token: "{{ ansible_password }}"
      register: le_private_key
@@ -77,7 +77,7 @@
    - name: 06 - Check whether an account with the given account key exists
      community.crypto.acme_account_info:
       account_key_content: "{{ le_private_key.data.data.private_key }}"
-      acme_directory: "{{ le_directory }}"
+      acme_directory: "{{ acme_directory }}"
       acme_version: 2
      register: account_data
 
@@ -91,7 +91,7 @@
        chain: "{{ fqdn }}.chain"
        fullchain: "{{ fqdn }}.fullchain"
        challenge: dns-01
-       acme_directory: "{{ le_directory }}"
+       acme_directory: "{{ acme_directory }}"
        acme_version: 2
        # Renew if the certificate is at least 30 days old
        remaining_days: 60
@@ -154,7 +154,7 @@
        chain: "{{ fqdn }}.chain"
        fullchain: "{{ fqdn }}.fullchain"
        challenge: dns-01
-       acme_directory: "{{ le_directory }}"
+       acme_directory: "{{ acme_directory }}"
        acme_version: 2
        # Renew if the certificate is at least 30 days old
        remaining_days: 60
