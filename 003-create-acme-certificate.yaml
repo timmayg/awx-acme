@@ -6,7 +6,6 @@
   vars:
 #
 #   
-   le_email: "timmayglen@gmail.com"
 #
 #
    vault_url: "https://vault.theglens.net:8200"
@@ -57,8 +56,9 @@
    - name: XXXX - Check whether an account with the given account key exists
      community.crypto.acme_account_info:
       account_key_content: "{{ le_private_key.secret.private_key }}"
-      acme_directory: "{{ acme_directory }}"
+      acme_directory: "{{ le_directory }}"
       acme_version: 2
+      le_email: "timmayglen@gmail.com"
      register: account_data
 
    - name: HARD STOP
