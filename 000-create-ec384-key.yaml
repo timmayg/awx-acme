@@ -23,7 +23,7 @@
        privatekey_path: "private.key"
 
 
-   - name: Create a new secret and store the two keys
+   - name: 03 - Create a new secret and store the two keys
      community.hashi_vault.vault_kv2_write:
        url: "https://vault.theglens.net:8200"
        path: "{{ key_name }}"
