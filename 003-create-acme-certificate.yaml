@@ -70,10 +70,6 @@
        common_name: "{{ fqdn }}"
 
 
-
-
-
-
    - name: 06 - Check whether an account with the given account key exists
      community.crypto.acme_account_info:
       account_key_content: "{{ le_private_key.data.data.private_key }}"
@@ -113,9 +109,6 @@
 #       msg: "{{ challenge_response }}"
 
 
-
-
-
    - name: 09 - Extract FQDN and DNS Challenge Text from ACME Response
      ansible.builtin.set_fact:
        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
@@ -140,10 +133,12 @@
      register: cloudflare_dns_create
      when: challenge_status == 'pending'
 
+
    - name: 11 - Pause the Playbook for 20 seconds
      ansible.builtin.pause:
        seconds: 20
      when: challenge_status == 'pending'  
+
 
    - name: 12 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
@@ -178,6 +173,7 @@
 #     register: cloudflare_dns_delete
      when: challenge_status == 'pending'
 
+
    - name: 14 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
      community.crypto.openssl_pkcs12:
        action: export
@@ -191,7 +187,6 @@
 
    - name: 15 - Encode the PKCS12 file to base64 Text
      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
-
 
 
    - name: 16 - Write the New Certificate to Vault
@@ -212,7 +207,6 @@
 
    - name: Timmay HARD STOP this Playbook
      ansible.builtin.meta: end_play
-
 
 
    - name: 17 - Read the New Certificate from Vault, REQD for the next step 
