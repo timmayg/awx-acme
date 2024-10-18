@@ -5,10 +5,11 @@
   vars: 
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "testkey999"
+   vault_secret: "le_stage_ec_key"
+
 
   tasks:
-    - name: Read The Let's Encrypt Private Key from Vault
+    - name: 01 - Read The Let's Encrypt Private Key from Vault
       community.hashi_vault.vault_kv2_get:
         url: "{{ vault_url }}"
         engine_mount_point: "{{ vault_mount }}"
@@ -23,20 +24,20 @@
 #        msg: "{{ response.secret.public_key }}"
 #        msg: "{{ response.secret.private_key }}"
 
-    - name: Write the private key to a file
+    - name: 02 - Write the private key to a file
       ansible.builtin.copy:
         content: "{{ response.secret.private_key }}"
         dest: ~/le_private_key.pem
         mode: '0600'
 
 
-    - name: Create ACME account
+    - name: 03 - Create ACME account
       community.crypto.acme_account:
         account_key_src: ~/le_private_key.pem
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
-          - mailto:timmayglen+test999@gmail.com
+          - mailto:timmayglen+testec@gmail.com
         state: present
         terms_agreed: true
       register: acme_account
