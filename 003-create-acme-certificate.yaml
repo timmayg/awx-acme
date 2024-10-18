@@ -134,7 +134,7 @@
 #       msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
 
 
-   - name: 10 - Create DNS TXT record with value "unique value"
+   - name: 10 - Create DNS TXT record with DNS-01 Challenge Text"
      community.general.cloudflare_dns:
        api_token: "{{ cloudflare_token.data.data.api_key }}"
        record: "{{ dns_01_challenge_fqdn }}"
@@ -213,6 +213,10 @@
          p12_in_base64: "{{ lookup('file',  'pkcs12_file.p12.txt') }}"
        auth_method: token
        token: "{{ ansible_password }}"
+
+
+   - name: Timmay HARD STOP this Playbook
+     ansible.builtin.meta: end_play
 
 
 
