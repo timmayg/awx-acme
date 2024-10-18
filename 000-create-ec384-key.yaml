@@ -15,12 +15,12 @@
      community.crypto.openssl_privatekey:
        curve: secp384r1
        type: ECC
-       path: "private.key"
+       path: ~/le_private_key.pem
 
    - name: 02 - Extract the Public Key
      community.crypto.openssl_publickey:
-       path: "public.key"
-       privatekey_path: "private.key"
+       path: ~/le_public_key.pem
+       privatekey_path: ~/le_private_key.pem
 
 
    - name: 03 - Create a new secret and store the two keys
@@ -31,7 +31,7 @@
        token: "{{ ansible_password }}"
        engine_mount_point: "kv"
        data: 
-         public_key: "{{ lookup('file', 'public.key') }}"
-         private_key: "{{ lookup('file', 'private.key') }}"
+         public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
+         private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
 
 
