@@ -5,8 +5,6 @@
   vars: 
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "le_stage_ec_key"
-
 
   tasks:
     - name: 01 - Read The Let's Encrypt Private Key from Vault
@@ -37,7 +35,7 @@
         acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
         acme_version: 2
         contact:
-          - mailto:timmayglen+testec@gmail.com
+          - timmayglen+testnomailto@gmail.com
         state: present
         terms_agreed: true
       register: acme_account
