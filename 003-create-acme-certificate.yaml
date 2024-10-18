@@ -155,7 +155,7 @@
 
    - name: 10 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
      community.crypto.acme_certificate:
-       account_email: "{{ le_email }}"
+       account_email: "{{ account_data.account.contact[0] | replace('mailto:', '') }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
        csr: "{{ fqdn }}.csr"
        cert: "{{ fqdn }}.cer"
