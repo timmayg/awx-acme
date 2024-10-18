@@ -5,7 +5,7 @@
   vars:
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
-   vault_secret: "le_stage_key"      # options: le_stage_key, le_prod_key
+
 
   tasks:
 
@@ -13,37 +13,36 @@
      community.hashi_vault.vault_kv2_get:
       url: "{{ vault_url }}"
       engine_mount_point: "{{ vault_mount }}"
-      path: "{{ vault_secret }}"
+      path: "{{ acme_private_key }}"
       auth_method: token
       token: "{{ ansible_password }}"
      register: response
 
+
    - name: 02 - Write the private key to a file
      ansible.builtin.copy:
       content: "{{ response.secret.private_key }}"
-      dest: "~/le_private_key.pem"
+      dest: ~/le_private_key.pem
       mode: '0600'
+
 
    - name: 03 - Check whether an account with the given account key exists
      community.crypto.acme_account_info:
-#      account_key_src: "~/le_private_key.pem"
       account_key_content: "{{ response.secret.private_key }}"
-      acme_directory: https://acme-staging-v02.api.letsencrypt.org/directory
+      acme_directory: "{{ acme_directory }}"
       acme_version: 2
      register: account_data
 
-   - name: 04 - Verify that account exists
-     ansible.builtin.assert:
-      that:
-       - account_data.exists
 
-   - name: 05 - Print account URI
+   - name: 04 - Print account URI
      ansible.builtin.debug:
       var: account_data.account_uri
 
-   - name: 06 - Print account contacts
+
+   - name: 05 - Print account contacts
      ansible.builtin.debug:
       var: account_data.account.contact
+
 
    - name: TIMMAY Stop the Playbool
      ansible.builtin.meta: end_play
