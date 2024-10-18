@@ -58,7 +58,6 @@
       account_key_content: "{{ le_private_key.secret.private_key }}"
       acme_directory: "{{ le_directory }}"
       acme_version: 2
-      le_email: "timmayglen@gmail.com"
      register: account_data
 
    - name: HARD STOP
@@ -90,6 +89,7 @@
 
    - name: 06 - Create the initial ACME Challenge
      community.crypto.acme_certificate:
+       le_email: "timmayglen@gmail.com"
        account_email: "{{ le_email }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
        csr: "{{ fqdn }}.csr"
