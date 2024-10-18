@@ -29,10 +29,11 @@
         type: ECC
         path: ~/le_private_key.pem
 
-     - name: 02 - Extract the Public Key
-       community.crypto.openssl_publickey:
-         path: ~/le_public_key.pem
-         privatekey_path: ~/le_private_key.pem
+
+    - name: 02 - Extract the Public Key
+      community.crypto.openssl_publickey:
+        path: ~/le_public_key.pem
+        privatekey_path: ~/le_private_key.pem
 
 
     - name: 03 - Create a new secret and store the two keys
