@@ -23,28 +23,28 @@
 #        msg: "{{ response.secret.private_key }}"
 
 
-   - name: 01 - Generate a EC384 bit ECC Private Key
-     community.crypto.openssl_privatekey:
-       curve: secp384r1
-       type: ECC
-       path: ~/le_private_key.pem
+    - name: 01 - Generate a EC384 bit ECC Private Key
+      community.crypto.openssl_privatekey:
+        curve: secp384r1
+        type: ECC
+        path: ~/le_private_key.pem
 
-   - name: 02 - Extract the Public Key
-     community.crypto.openssl_publickey:
-       path: ~/le_public_key.pem
-       privatekey_path: ~/le_private_key.pem
+     - name: 02 - Extract the Public Key
+       community.crypto.openssl_publickey:
+         path: ~/le_public_key.pem
+         privatekey_path: ~/le_private_key.pem
 
 
-   - name: 03 - Create a new secret and store the two keys
-     community.hashi_vault.vault_kv2_write:
-       url: "https://vault.theglens.net:8200"
-       path: "{{ key_name }}"
-       auth_method: token
-       token: "{{ ansible_password }}"
-       engine_mount_point: "kv"
-       data: 
-         public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
-         private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
+    - name: 03 - Create a new secret and store the two keys
+      community.hashi_vault.vault_kv2_write:
+        url: "https://vault.theglens.net:8200"
+        path: "{{ key_name }}"
+        auth_method: token
+        token: "{{ ansible_password }}"
+        engine_mount_point: "kv"
+        data: 
+          public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
+          private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
 
 
 
