@@ -89,8 +89,7 @@
 
    - name: 06 - Create the initial ACME Challenge
      community.crypto.acme_certificate:
-       #le_email: "timmayglen@gmail.com"
-       account_email: "{{ account_data.account.contact[0] }}"
+       account_email: "{{ account_data.account.contact[0] | replace('mailto:', '') }}"
        account_key_content: "{{ le_private_key.secret.private_key }}"
        csr: "{{ fqdn }}.csr"
        cert: "{{ fqdn }}.cer"
