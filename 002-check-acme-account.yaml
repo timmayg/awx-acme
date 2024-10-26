@@ -6,7 +6,7 @@
    vault_url: "https://vault.theglens.net:8200"
    vault_mount: "kv"
 
-
+ 
   tasks:
 
    - name: 01 - Read The Let's Encrypt Private Key from Vault
