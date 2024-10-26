@@ -16,6 +16,7 @@
       path: "{{ key_name }}"
       auth_method: token
       token: "{{ ansible_password }}"
+      version: "{{ key_ver }}"
      register: response
 
 
