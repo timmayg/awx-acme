@@ -56,7 +56,7 @@
 #s        mode: '0600'
 
 
-    - name: 05 - Create ACME account
+    - name: 05 - Create ACME account on the server
       community.crypto.acme_account:
         account_key_src: ~/le_private_key.pem
         acme_directory: "{{ acme_directory }}"
