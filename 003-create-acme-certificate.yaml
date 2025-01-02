@@ -129,7 +129,7 @@
        type: TXT
        value: "{{ dns_01_challenge_text }}"
        state: present    # present (default), absent
-       zone: theglens.net
+       zone: "{{ zone }}"
      register: cloudflare_dns_create
      when: challenge_status == 'pending'
 
@@ -169,7 +169,7 @@
        record: "{{ dns_01_challenge_fqdn }}"
        type: TXT
        state: absent    # present (default), absent
-       zone: theglens.net
+       zone: "{{ zone }}"
 #     register: cloudflare_dns_delete
      when: challenge_status == 'pending'
 
