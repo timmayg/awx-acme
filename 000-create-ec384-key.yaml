@@ -11,9 +11,10 @@
      ansible.builtin.debug:
        msg: "v2.2"
 
-   - name: 01 - Generate a EC384 bit ECC Private Key
+   - name: 01 - Create a new Elliptic Curve Key Pair
      community.crypto.openssl_privatekey:
-       curve: secp384r1
+       #curve: secp384r1
+       curve: "{{ curve }}"
        type: ECC
        path: ~/le_private_key.pem
 
