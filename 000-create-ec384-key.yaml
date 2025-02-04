@@ -10,7 +10,7 @@
 
    - name: 01 - Create a new Elliptic Curve Key Pair
      community.crypto.openssl_privatekey:
-       #curve: secp384r1
+       # curve: secp384r1
        curve: "{{ curve }}"
        type: ECC
        path: ~/le_private_key.pem
@@ -23,14 +23,12 @@
 
    - name: 03 - Create a new secret and store the two keys
      community.hashi_vault.vault_kv2_write:
-       path: "cred_lab_fmc"  
+       path: "{{ key_name }}"
        url: "{{ vault_url }}"
-       auth_method: "{{ vault_auth_method  }}" 
+       auth_method: "{{ vault_auth_method  }}"
        token: "{{ vault_token }}"
        engine_mount_point: "{{ vault_mount }}"
-       data: 
-         public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
-         private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
-     register: ec-write
-
-      
+       data:
+        public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
+        private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
+     register: ec_write
