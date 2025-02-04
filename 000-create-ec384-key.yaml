@@ -2,14 +2,11 @@
 - name: Create an EC384 Key and store it in Vault
   hosts: localhost
   gather_facts: false
-  vars:
-    vault_url: "https://vault.theglens.net:8200"
-    vault_mount: "kv"
   
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v2.2"
+       msg: "v2.3"
 
    - name: 01 - Create a new Elliptic Curve Key Pair
      community.crypto.openssl_privatekey:
@@ -26,13 +23,14 @@
 
    - name: 03 - Create a new secret and store the two keys
      community.hashi_vault.vault_kv2_write:
-       url: "https://vault.theglens.net:8200"
-       path: "{{ key_name }}"
-       auth_method: token
-       token: "{{ ansible_password }}"
-       engine_mount_point: "kv"
+       path: "cred_lab_fmc"  
+       url: "{{ vault_url }}"
+       auth_method: "{{ vault_auth_method  }}" 
+       token: "{{ vault_token }}"
+       engine_mount_point: "{{ vault_mount }}"
        data: 
          public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
          private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
+      register: ec-write
 
-
+      
