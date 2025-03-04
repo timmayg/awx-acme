@@ -7,6 +7,11 @@
     vault_mount: "kv"
 
   tasks:
+#
+#   v2 should
+#      - use the aa-Vault Info PROD credential
+#
+#
     #
     # THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
     #
