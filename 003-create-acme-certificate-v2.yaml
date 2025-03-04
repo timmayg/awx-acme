@@ -130,7 +130,7 @@
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
-        fullchain: "{{ fqdn }}.fullchain }}"
+        fullchain: "{{ fqdn }}.fullchain"
         challenge: dns-01
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
