@@ -96,13 +96,23 @@
         remaining_days: 60
       register: challenge_response
 
+
+
+
+    #
+    #   This task captures if Lets Encrypt Requires a DNS-01 Challenge
+    #   If the result is pending, then we need to create a DNS TXT record
+    #   If the result is valid, then we can proceed to the next step
+    #
+    #
     - name: 08 - Capture the ACME Challenge Response
       ansible.builtin.set_fact:
         challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
-    # - name: Print 
-    #   ansible.builtin.debug:
-    #     msg: "{{ challenge_response }}"
+
+    - name: Print 
+      ansible.builtin.debug:
+        msg: "{{ challenge_response }}"
 
     - name: 09 - Extract FQDN and DNS Challenge Text from ACME Response
       ansible.builtin.set_fact:
