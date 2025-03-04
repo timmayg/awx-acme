@@ -105,13 +105,32 @@
     #   If the result is valid, then we can proceed to the next step
     #   All this does is show the result. 
     #
-    - name: POSSAFFECTED - 08 - Capture the ACME Challenge Response
-      ansible.builtin.set_fact:
-        challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
+    # - name: POSSAFFECTED - 08 - Capture the ACME Challenge Response
+    #   ansible.builtin.set_fact:
+    #     challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
     - name: 08 - Capture ACME Challenge Responses for All Domains
       ansible.builtin.set_fact:
         challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
+
+
+    - name: Print
+      ansible.builtin.debug:
+        msg: "{{ challenge_response }}"
+
+    # - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
+    #   ansible.builtin.set_fact:
+    #     dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
+    #     dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
+    #   when: challenge_status == 'pending'
+
+
+    - name: 09 - Extract FQDN and DNS Challenge Text for Each Domain
+      ansible.builtin.set_fact:
+        dns_01_challenge_texts: "{{ dns_01_challenge_texts | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='token') | list | first }) }}"
+        dns_01_challenge_fqdns: "{{ dns_01_challenge_fqdns | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='validationRecord') | map(attribute='hostname') | list | first }) }}"
+      loop: "{{ challenge_status | dict2items }}"
+      when: item.value.status == 'pending'
 
 
 
@@ -120,15 +139,6 @@
 
 
 
-    - name: Print
-      ansible.builtin.debug:
-        msg: "{{ challenge_response }}"
-
-    - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
-      ansible.builtin.set_fact:
-        dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
-        dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-      when: challenge_status == 'pending'
 
     # - name: Print
     #   ansible.builtin.debug:
