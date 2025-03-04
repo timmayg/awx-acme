@@ -103,18 +103,28 @@
     #   This task captures if Lets Encrypt Requires a DNS-01 Challenge
     #   If the result is pending, then we need to create a DNS TXT record
     #   If the result is valid, then we can proceed to the next step
+    #   All this does is show the result. 
     #
-    #
-    - name: 08 - Capture the ACME Challenge Response
+    - name: POSSAFFECTED - 08 - Capture the ACME Challenge Response
       ansible.builtin.set_fact:
         challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
+    - name: 08 - Capture ACME Challenge Responses for All Domains
+      ansible.builtin.set_fact:
+        challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
 
-    - name: Print 
+
+
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
+    - name: Print
       ansible.builtin.debug:
         msg: "{{ challenge_response }}"
 
-    - name: 09 - Extract FQDN and DNS Challenge Text from ACME Response
+    - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
       ansible.builtin.set_fact:
         dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
         dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
@@ -125,7 +135,7 @@
     #     msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
     #     msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
 
-    - name: 10 - Create DNS TXT record with DNS-01 Challenge Text
+    - name: POSSAFFECTED - 10 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_token.data.data.api_key }}"
         record: "{{ dns_01_challenge_fqdn }}"
@@ -161,7 +171,7 @@
     #   ansible.builtin.shell: cat "{{ fqdn }}.cer"
     #   register: cert_file
 
-    - name: 13 - Delete the DNS TXT record (if it exists)
+    - name: POSSAFFECTED - 13 - Delete the DNS TXT record (if it exists)
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_token.data.data.api_key }}"
         record: "{{ dns_01_challenge_fqdn }}"
