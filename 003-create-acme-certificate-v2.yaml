@@ -68,8 +68,8 @@
         subject_alt_name: "{{ sans }}"
 
 
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
+#    - name: Timmay HARD STOP this Playbook
+#      ansible.builtin.meta: end_play
 
 
 
