@@ -159,9 +159,9 @@
         action: export
         friendly_name: "{{ fqdn }}"
         privatekey_path: "{{ fqdn }}.key"
-        certificate_path: "{{ fqdn }}.fullchain }}"
+        certificate_path: "{{ fqdn }}.fullchain"
         path: pkcs12_file.bin.p12
-        passphrase: "cisco123"
+        passphrase: "{{ pkcs12_passphrase }}"
         state: present
 
     - name: 15 - Encode the PKCS12 file to base64 Text
