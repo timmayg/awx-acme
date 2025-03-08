@@ -91,10 +91,16 @@
 #      register: account_data
 
 
+# commit msg
+# tshoot update le key
 
+    - name: Print 
+      ansible.builtin.debug:
+        msg: "{{ contact }}"
+        msg: "{{ key }}"
 
-#    - name: Timmay HARD STOP this Playbook
-#      ansible.builtin.meta: end_play
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
 
 
 
