@@ -97,6 +97,10 @@
     - name: Print 
       ansible.builtin.debug:
         msg: "{{ contact }}"
+
+
+    - name: Print 
+      ansible.builtin.debug:
         msg: "{{ key }}"
 
     - name: Timmay HARD STOP this Playbook
