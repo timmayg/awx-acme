@@ -102,14 +102,16 @@
       ansible.builtin.debug:
         msg: "{{ key }}"
 
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
+
+    # - name: Timmay HARD STOP this Playbook
+    #   ansible.builtin.meta: end_play
 
 
 
 
     - name: 07 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
+ #      account_email: "{{ account_data.account.contact[0] | replace('mailto:', '') }}"
         account_email: "{{ contact }}"
         account_key_content: "{{ key }}"
         csr: "{{ fqdn }}.csr"
