@@ -81,25 +81,24 @@
 #        acme_version: 2
 #      register: account_data
 
-
-#    - name: 06-new - Check whether an account with the given account key exists
-#      # This is req to get the account email address for other tasks
-#      community.crypto.acme_account_info:
-#        account_key_content: "{{ key }}"
-#        acme_directory: "{{ acme_directory }}"
-#        acme_version: 2
-#      register: account_data
-
-
 # commit msg
 # tshoot update le key
 
-    - name: Print 
+    - name: 06-new - Check whether an account with the given account key exists
+      # This is req to get the account email address for other tasks
+      community.crypto.acme_account_info:
+        account_key_content: "{{ key }}"
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+      register: account_data
+
+
+    - name: Print
       ansible.builtin.debug:
         msg: "{{ contact }}"
 
 
-    - name: Print 
+    - name: Print
       ansible.builtin.debug:
         msg: "{{ key }}"
 
