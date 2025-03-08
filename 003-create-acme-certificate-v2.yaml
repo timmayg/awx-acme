@@ -74,12 +74,30 @@
 
 
 
-    - name: 06 - Check whether an account with the given account key exists
+    - name: 06-old - Check whether an account with the given account key exists
       community.crypto.acme_account_info:
         account_key_content: "{{ le_private_key.data.data.private_key }}"
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
       register: account_data
+
+
+
+    - name: 06-new - Check whether an account with the given account key exists
+      community.crypto.acme_account_info:
+        account_key_content: "{{ key }}"
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+      register: account_data
+
+
+
+
+    - name: Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
 
     - name: 07 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
@@ -114,9 +132,10 @@
         challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
 
 
-    - name: Print
-      ansible.builtin.debug:
-        msg: "{{ challenge_response }}"
+    # - name: Print
+    #   ansible.builtin.debug:
+    #     msg: "{{ challenge_response }}"
+
 
     # - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
     #   ansible.builtin.set_fact:
