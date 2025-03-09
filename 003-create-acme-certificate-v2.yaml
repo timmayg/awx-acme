@@ -62,14 +62,14 @@
     - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
-        record: "_acme-challenge.{{ item.0.key }}"
+        record: "{{ item.0.value.dns-01.record }}"
         type: TXT
-        value: "{{ item.1.token }}"
+        value: "{{ item.0.value.dns-01.resource_value }}"
         state: present
         zone: "{{ zone }}"
-      loop: "{{ pending_challenges | subelements('value.challenges', skip_missing=True) | selectattr('1.type', 'equalto', 'dns-01') | list }}"
+      loop: "{{ challenge_response.challenge_data | dict2items | selectattr('value.dns-01', 'defined') | list }}"
       loop_control:
-        label: "_acme-challenge.{{ item.0.key }}"
+        label: "{{ item.0.value.dns-01.record }}"
       register: cloudflare_dns_create
 
 
