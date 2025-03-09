@@ -60,7 +60,7 @@
         var: challenge_response
 
 
-    - name: Extract pending DNS-01 challenges
+    - name: 05 - Extract pending DNS-01 challenges
       ansible.builtin.set_fact:
         pending_challenges: "{{ challenge_response.authorizations | default({}) | dict2items | selectattr('value.status', 'equalto', 'pending') | list }}"
 
