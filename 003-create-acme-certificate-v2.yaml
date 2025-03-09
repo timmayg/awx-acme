@@ -35,7 +35,7 @@
         path: "{{ fqdn }}.csr"
         privatekey_path: "{{ fqdn }}.key"
         common_name: "{{ fqdn }}"
-        subject_alt_name: "{{ sans }}"
+        subject_alt_name: "{{ sans | default(omit) }}"
 
 
     - name: 04 - Create the initial ACME Challenge
