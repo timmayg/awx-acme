@@ -76,13 +76,13 @@
     - name: 07 - Pause the Playbook for 20 seconds
       ansible.builtin.pause:
         seconds: 20
-      # when: challenge_status == 'pending'  
+      # when: challenge_status == 'pending'
 
 
     - name: 08 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
       community.crypto.acme_certificate:
-        account_email: "{{ account_data.account.contact[0] | replace('mailto:', '') }}"
-        account_key_content: "{{ le_private_key }}"
+        account_email: "{{ contact }}"
+        account_key_content: "{{ key }}"
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
