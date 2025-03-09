@@ -56,7 +56,7 @@
 
 
     - name: Extract pending DNS-01 challenges
-      set_fact:
+      ansible.builtin.set_fact:
         pending_challenges: "{{ challenge_response | dict2items | selectattr('key', 'in', authorizations | dict2items | selectattr('value.status', 'equalto', 'pending') | map(attribute='key')) | list }}"
 
     - name: Create DNS TXT record with DNS-01 Challenge Text
