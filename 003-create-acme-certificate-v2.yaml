@@ -168,7 +168,7 @@
     #   when: challenge_status == 'pending'
 
 
-    - name: 09 - Extract FQDN and DNS Challenge Text for Each Domain
+    - name: 06 - Extract FQDN and DNS Challenge Text for Each Domain
       ansible.builtin.set_fact:
         dns_01_challenge_texts: "{{ dns_01_challenge_texts | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='token') | list | first }) }}"
         dns_01_challenge_fqdns: "{{ dns_01_challenge_fqdns | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='validationRecord') | map(attribute='hostname') | list | first }) }}"
