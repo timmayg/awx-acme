@@ -69,14 +69,14 @@
     - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
-        record: "{{ item.value.dns-01.record }}"
+        record: "{{ item.0.key }}"
         type: TXT
-        value: "{{ item.value.dns-01.resource_value }}"
+        value: "{{ item.1.token }}"
         state: present
         zone: "{{ zone }}"
-      loop: "{{ pending_challenges }}"
+      loop: "{{ pending_challenges | subelements('value.challenges', skip_missing=True) | selectattr('1.type', 'equalto', 'dns-01') | list }}"
       loop_control:
-        label: "{{ item.value.dns-01.record }}"
+        label: "{{ item.0.key }}"
       register: cloudflare_dns_create
 
 
