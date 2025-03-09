@@ -23,7 +23,7 @@
     #   ansible.builtin.set_fact:
     #     fqdn: "aaa{{ rand }}.theglens.net"
 
-    - name: Print
+    - name: DEBUG - Print
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
@@ -33,6 +33,7 @@
         type: ECC
         path: "{{ fqdn }}.key"
 
+
     - name: 02 - Generate an OpenSSL public key in PEM format
       community.crypto.openssl_publickey:
         path: "{{ fqdn }}.pub"
@@ -40,20 +41,22 @@
 
 
 
-    - name: 04 - Read The Cloudflare API Key from Vault
-      community.hashi_vault.vault_kv2_get:
-        url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "cloudflare_token"
-        auth_method: token
-        token: "{{ ansible_password }}"
-      register: cloudflare_token
+    # - name: XX - REMOVE UPDATE - Read The Cloudflare API Key from Vault
+    #   community.hashi_vault.vault_kv2_get:
+    #     url: "{{ vault_url }}"
+    #     engine_mount_point: "{{ vault_mount }}"
+    #     path: "cloudflare_token"
+    #     auth_method: token
+    #     token: "{{ ansible_password }}"
+    #   register: cloudflare_token
 
-    # - name: Print 
+
+    # - name: DEBUG - Print 
     #   ansible.builtin.debug:
     #     msg: "{{ server_private_key.secret.private_key }}"
 
-    - name: 05 - Generate an OpenSSL Certificate Signing Request
+
+    - name: 03 - Generate an OpenSSL Certificate Signing Request
       community.crypto.openssl_csr:
         path: "{{ fqdn }}.csr"
         privatekey_path: "{{ fqdn }}.key"
@@ -61,7 +64,7 @@
         subject_alt_name: "{{ sans }}"
 
 
-#    - name: Timmay HARD STOP this Playbook
+#    - name: DEBUG - Timmay HARD STOP this Playbook
 #      ansible.builtin.meta: end_play
 
 #    - name: 03 - DELETE - Read The Let's Encrypt Private Key from Vault
@@ -84,7 +87,7 @@
 # commit msg
 # tshoot update le key
 
-    - name: 06-new - Check whether an account with the given account key exists
+    - name: 06-new - DELETE - Check whether an account with the given account key exists
       # This is req to get the account email address for other tasks
       community.crypto.acme_account_info:
         account_key_content: "{{ key }}"
@@ -93,12 +96,12 @@
       register: account_data
 
 
-    - name: Print
+    - name: DEBUG - Print
       ansible.builtin.debug:
         msg: "{{ contact }}"
 
 
-    - name: Print
+    - name: DEBUG - Print
       ansible.builtin.debug:
         msg: "{{ key }}"
 
@@ -109,7 +112,7 @@
 
 
 
-    - name: 07 - Create the initial ACME Challenge
+    - name: 04 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
  #      account_email: "{{ account_data.account.contact[0] | replace('mailto:', '') }}"
         account_email: "{{ contact }}"
@@ -127,10 +130,10 @@
 
 
 
-
-    - name: Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
+#
+#    - name: DEBUG - Timmay HARD STOP this Playbook
+#      ansible.builtin.meta: end_play
+#
 
 
 
@@ -145,7 +148,10 @@
     #   ansible.builtin.set_fact:
     #     challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
 
-    - name: 08 - Capture ACME Challenge Responses for All Domains
+
+
+
+    - name: 05 - Capture ACME Challenge Responses for All Domains
       ansible.builtin.set_fact:
         challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
 
@@ -171,13 +177,13 @@
 
 
 
-    - name: Timmay HARD STOP this Playbook
+    - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
 
 
 
-    # - name: Print
+    # - name: DEBUG - Print
     #   ansible.builtin.debug:
     #     msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
     #     msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
@@ -217,7 +223,7 @@
       register: certificate_response
 
 
-    # - name: cat the cert file
+    # - name: DEBUG - cat the cert file
     #   ansible.builtin.shell: cat "{{ fqdn }}.cer"
     #   register: cert_file
 
@@ -267,9 +273,9 @@
 
 
 
-    - name: Timmay HARD STOP this Playbook
+    - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
-    - name: Timmay HARD STOP this Playbook
+    - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
