@@ -55,9 +55,43 @@
       register: challenge_response
 
 
-    - name: 05 - Capture ACME Challenge Responses for All Domains
-      ansible.builtin.set_fact:
-        challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
+    - name: Extract pending DNS-01 challenges
+      set_fact:
+        pending_challenges: "{{ challenge_response | dict2items | selectattr('key', 'in', authorizations | dict2items | selectattr('value.status', 'equalto', 'pending') | map(attribute='key')) | list }}"
+
+    - name: Create DNS TXT record with DNS-01 Challenge Text
+      community.general.cloudflare_dns:
+        api_token: "{{ cloudflare_api_key }}"
+        record: "{{ item.value.dns-01.record }}"
+        type: TXT
+        value: "{{ item.value.dns-01.resource_value }}"
+        state: present
+        zone: "{{ zone }}"
+      loop: "{{ pending_challenges }}"
+      loop_control:
+        label: "{{ item.value.dns-01.record }}"
+      register: cloudflare_dns_create
+
+
+
+
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
+
+
+
+
+
+
+
+#    - name: 05 - Capture ACME Challenge Responses for All Domains
+#      ansible.builtin.set_fact:
+#        challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
 
 
 
