@@ -55,15 +55,9 @@
       register: challenge_response
 
 
-    - name: Debug challenge_response structure
-      debug:
-        var: challenge_response
-
-
     - name: 05 - Extract pending DNS-01 challenges
       ansible.builtin.set_fact:
         pending_challenges: "{{ challenge_response.authorizations | default({}) | dict2items | selectattr('value.status', 'equalto', 'pending') | list }}"
-
 
 
     - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
@@ -80,68 +74,7 @@
       register: cloudflare_dns_create
 
 
-
-
-
-
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
-
-
-
-
-
-
-
-
-#    - name: 05 - Capture ACME Challenge Responses for All Domains
-#      ansible.builtin.set_fact:
-#        challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
-
-
-
-    # - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
-    #   ansible.builtin.set_fact:
-    #     dns_01_challenge_text: "{{ challenge_response.challenge_data[fqdn]['dns-01'].resource_value }}"
-    #     dns_01_challenge_fqdn: "{{ challenge_response.challenge_data[fqdn]['dns-01'].record.split('.')[0:2] | join('.') }}"
-    #   when: challenge_status == 'pending'
-
-
-    - name: 06 - Extract FQDN and DNS Challenge Text for Each Domain
-      ansible.builtin.set_fact:
-        dns_01_challenge_texts: "{{ dns_01_challenge_texts | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='token') | list | first }) }}"
-        dns_01_challenge_fqdns: "{{ dns_01_challenge_fqdns | default({}) | combine({item.key: item.value.challenges | selectattr('type', 'equalto', 'dns-01') | map(attribute='validationRecord') | map(attribute='hostname') | list | first }) }}"
-      loop: "{{ challenge_status | dict2items }}"
-      when: item.value.status == 'pending'
-
-
-
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
-
-
-    # - name: DEBUG - Print
-    #   ansible.builtin.debug:
-    #     msg: "DNS-01 challenge text is: {{ dns_01_challenge_text }}"
-    #     msg: "DNS-01 certificate FQDN is: {{ dns_01_challenge_fqdn }}"
-
-    - name: POSSAFFECTED - 10 - Create DNS TXT record with DNS-01 Challenge Text
-      community.general.cloudflare_dns:
-        api_token: "{{ cloudflare_api_key }}"
-        record: "{{ dns_01_challenge_fqdn }}"
-        type: TXT
-        value: "{{ dns_01_challenge_text }}"
-        state: present    # present (default), absent
-        zone: "{{ zone }}"
-      register: cloudflare_dns_create
-      when: challenge_status == 'pending'
-
-
-    - name: 11 - Pause the Playbook for 20 seconds
+    - name: 07 - Pause the Playbook for 20 seconds
       ansible.builtin.pause:
         seconds: 20
       when: challenge_status == 'pending'  
