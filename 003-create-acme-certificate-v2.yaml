@@ -101,19 +101,21 @@
     #   register: cert_file
 
 
-    - name: POSSAFFECTED - 13 - Delete the DNS TXT record (if it exists)
+    - name: 09 - Delete DNS TXT record after validation
       community.general.cloudflare_dns:
-        api_token: "{{ cloudflare_token.data.data.api_key }}"
-        record: "{{ dns_01_challenge_fqdn }}"
+        api_token: "{{ cloudflare_api_key }}"
+        record: "{{ item.value['dns-01']['record'] }}"
         type: TXT
-        state: absent    # present (default), absent
+        state: absent
         zone: "{{ zone }}"
-      # register: cloudflare_dns_delete
-      when: challenge_status == 'pending'
-      ignore_errors: yes
+      loop: "{{ challenge_response.challenge_data | dict2items | selectattr('value.dns-01', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.value['dns-01']['record'] }}"
+      register: cloudflare_dns_delete
+      ignore_errors: true
 
 
-    - name: 14 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+    - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
         action: export
         friendly_name: "{{ fqdn }}"
@@ -123,12 +125,14 @@
         passphrase: "{{ pkcs12_passphrase }}"
         state: present
 
-
-    - name: 15 - Encode the PKCS12 file to base64 Text
+#
+#  Can this be done natively  
+#
+    - name: 11 - Encode the PKCS12 file to base64 Text
       ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
 
-    - name: 16 - Write the New Certificate to Vault
+    - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
         url: "{{ vault_url }}"
         engine_mount_point: "{{ vault_mount }}"
@@ -144,11 +148,5 @@
         token: "{{ ansible_password }}"
 
 
-
-
     - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
-
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
