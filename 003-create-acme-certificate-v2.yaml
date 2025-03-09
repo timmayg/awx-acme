@@ -87,23 +87,23 @@
 # commit msg
 # tshoot update le key
 
-    - name: 06-new - DELETE - Check whether an account with the given account key exists
-      # This is req to get the account email address for other tasks
-      community.crypto.acme_account_info:
-        account_key_content: "{{ key }}"
-        acme_directory: "{{ acme_directory }}"
-        acme_version: 2
-      register: account_data
+    # - name: 06-new - DELETE - Check whether an account with the given account key exists
+    #   # This is req to get the account email address for other tasks
+    #   community.crypto.acme_account_info:
+    #     account_key_content: "{{ key }}"
+    #     acme_directory: "{{ acme_directory }}"
+    #     acme_version: 2
+    #   register: account_data
 
 
-    - name: DEBUG - Print
-      ansible.builtin.debug:
-        msg: "{{ contact }}"
+    # - name: DEBUG - Print
+    #   ansible.builtin.debug:
+    #     msg: "{{ contact }}"
 
 
-    - name: DEBUG - Print
-      ansible.builtin.debug:
-        msg: "{{ key }}"
+    # - name: DEBUG - Print
+    #   ansible.builtin.debug:
+    #     msg: "{{ key }}"
 
 
     # - name: Timmay HARD STOP this Playbook
@@ -190,7 +190,7 @@
 
     - name: POSSAFFECTED - 10 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
-        api_token: "{{ cloudflare_token.data.data.api_key }}"
+        api_token: "{{ cloudflare_api_key }}"
         record: "{{ dns_01_challenge_fqdn }}"
         type: TXT
         value: "{{ dns_01_challenge_text }}"
