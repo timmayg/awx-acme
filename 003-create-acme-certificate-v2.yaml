@@ -55,11 +55,18 @@
       register: challenge_response
 
 
+    - name: Debug challenge_response structure
+      debug:
+        var: challenge_response
+
+
     - name: Extract pending DNS-01 challenges
       ansible.builtin.set_fact:
-        pending_challenges: "{{ challenge_response | dict2items | selectattr('key', 'in', authorizations | dict2items | selectattr('value.status', 'equalto', 'pending') | map(attribute='key')) | list }}"
+        pending_challenges: "{{ challenge_response.authorizations | default({}) | dict2items | selectattr('value.status', 'equalto', 'pending') | list }}"
 
-    - name: Create DNS TXT record with DNS-01 Challenge Text
+
+
+    - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
         record: "{{ item.value.dns-01.record }}"
