@@ -12,16 +12,6 @@
 #      - use the aa-Vault Info PROD credential
 #
 #
-    #
-    # THESE TWO TASKS ARE FOR TESTING WITH RANDOM FQDNS
-    #
-    # - name: Generate a random string for use in the FQDN
-    #   ansible.builtin.set_fact:
-    #     rand: "{{ lookup('community.general.random_string', length=5, lower=true, upper=false, special=false, numbers=false) }}"
-    #
-    # - name: Build the Random Hostname and FQDN
-    #   ansible.builtin.set_fact:
-    #     fqdn: "aaa{{ rand }}.theglens.net"
 
     - name: DEBUG - Print
       ansible.builtin.debug:
@@ -40,76 +30,12 @@
         privatekey_path: "{{ fqdn }}.key"
 
 
-
-    # - name: XX - REMOVE UPDATE - Read The Cloudflare API Key from Vault
-    #   community.hashi_vault.vault_kv2_get:
-    #     url: "{{ vault_url }}"
-    #     engine_mount_point: "{{ vault_mount }}"
-    #     path: "cloudflare_token"
-    #     auth_method: token
-    #     token: "{{ ansible_password }}"
-    #   register: cloudflare_token
-
-
-    # - name: DEBUG - Print 
-    #   ansible.builtin.debug:
-    #     msg: "{{ server_private_key.secret.private_key }}"
-
-
     - name: 03 - Generate an OpenSSL Certificate Signing Request
       community.crypto.openssl_csr:
         path: "{{ fqdn }}.csr"
         privatekey_path: "{{ fqdn }}.key"
         common_name: "{{ fqdn }}"
         subject_alt_name: "{{ sans }}"
-
-
-#    - name: DEBUG - Timmay HARD STOP this Playbook
-#      ansible.builtin.meta: end_play
-
-#    - name: 03 - DELETE - Read The Let's Encrypt Private Key from Vault
-#      community.hashi_vault.vault_kv2_get:
-#        url: "{{ vault_url }}"
-#        engine_mount_point: "{{ vault_mount }}"
-#        path: "{{ key_name }}"
-#        auth_method: token
-#        token: "{{ ansible_password }}"
-#      register: le_private_key
-
-
-#    - name: 06-old - DELETE - Check whether an account with the given account key exists
-#      community.crypto.acme_account_info:
-#        account_key_content: "{{ le_private_key.data.data.private_key }}"
-#        acme_directory: "{{ acme_directory }}"
-#        acme_version: 2
-#      register: account_data
-
-# commit msg
-# tshoot update le key
-
-    # - name: 06-new - DELETE - Check whether an account with the given account key exists
-    #   # This is req to get the account email address for other tasks
-    #   community.crypto.acme_account_info:
-    #     account_key_content: "{{ key }}"
-    #     acme_directory: "{{ acme_directory }}"
-    #     acme_version: 2
-    #   register: account_data
-
-
-    # - name: DEBUG - Print
-    #   ansible.builtin.debug:
-    #     msg: "{{ contact }}"
-
-
-    # - name: DEBUG - Print
-    #   ansible.builtin.debug:
-    #     msg: "{{ key }}"
-
-
-    # - name: Timmay HARD STOP this Playbook
-    #   ansible.builtin.meta: end_play
-
-
 
 
     - name: 04 - Create the initial ACME Challenge
@@ -129,36 +55,10 @@
       register: challenge_response
 
 
-
-#
-#    - name: DEBUG - Timmay HARD STOP this Playbook
-#      ansible.builtin.meta: end_play
-#
-
-
-
-
-    #
-    #   This task captures if Lets Encrypt Requires a DNS-01 Challenge
-    #   If the result is pending, then we need to create a DNS TXT record
-    #   If the result is valid, then we can proceed to the next step
-    #   All this does is show the result. 
-    #
-    # - name: POSSAFFECTED - 08 - Capture the ACME Challenge Response
-    #   ansible.builtin.set_fact:
-    #     challenge_status: "{{ challenge_response.authorizations[fqdn].status }}"
-
-
-
-
     - name: 05 - Capture ACME Challenge Responses for All Domains
       ansible.builtin.set_fact:
         challenge_status: "{{ challenge_response.authorizations | dict2items | items2dict(key_name='key', value_name='value') }}"
 
-
-    # - name: Print
-    #   ansible.builtin.debug:
-    #     msg: "{{ challenge_response }}"
 
 
     # - name: POSSAFFECTED - 09 - Extract FQDN and DNS Challenge Text from ACME Response
