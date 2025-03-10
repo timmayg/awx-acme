@@ -101,7 +101,7 @@
       register: cloudflare_dns_delete
       ignore_errors: true
 
-
+#  tshoot webex reporting
 #################################################################
 #
 # Add some Webex Room Reporting, Subject , Issue Date, Expiry Date, SAN
@@ -114,8 +114,8 @@
       community.general.cisco_webex:
         recipient_type: roomId
         recipient_id: "{{ recipient_id }}"
-        msg_type: markdown
         personal_token: "{{ personal_token }}"
+        msg_type: markdown
         msg: "This is the first line of text<br>
               This is the second line of text<br>
               This is the third line of text"
