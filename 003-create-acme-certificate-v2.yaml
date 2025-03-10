@@ -152,7 +152,7 @@
         recipient_id: "{{ recipient_id }}"
         personal_token: "{{ personal_token }}"
         msg_type: markdown
-        msg: "Certificate Subject: <br>
+        msg: "Certificate Subject: "{{ cert_info.subject_ordered.commonName }}"<br>
               Certificate Validity Begins: <br>
               Certificate Validity Ends: <br>
               Certificate Issuer: <br>"
