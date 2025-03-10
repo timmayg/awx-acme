@@ -2,16 +2,8 @@
 - name: Create a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: false
-  vars:
-    vault_url: "https://vault.theglens.net:8200"
-    vault_mount: "kv"
 
   tasks:
-#
-#   v2 should
-#      - use the aa-Vault Info PROD credential
-#
-#
 
     - name: DEBUG - Print
       ansible.builtin.debug:
@@ -96,11 +88,6 @@
       register: certificate_response
 
 
-    # - name: DEBUG - cat the cert file
-    #   ansible.builtin.shell: cat "{{ fqdn }}.cer"
-    #   register: cert_file
-
-
     - name: 09 - Delete DNS TXT record after validation
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
@@ -134,9 +121,11 @@
 
     - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
+        path: "{{ vault_kv_path }}"
         url: "{{ vault_url }}"
-        engine_mount_point: "{{ vault_mount }}"
-        path: "{{ fqdn }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}”
         data:
           public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
           private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
@@ -144,8 +133,7 @@
           chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
           fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
           p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
-        auth_method: token
-        token: "{{ ansible_password }}"
+
 
 
     - name: DEBUG - Timmay HARD STOP this Playbook
