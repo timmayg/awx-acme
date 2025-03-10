@@ -102,6 +102,28 @@
       ignore_errors: true
 
 
+#################################################################
+#
+# Add some Webex Room Reporting, Subject , Issue Date, Expiry Date, SAN
+
+    - name: AA - Get certificate information
+      community.crypto.x509_certificate_info:
+        path: "{{ fqdn }}.cer"
+
+    - name: BB - Cisco Webex Teams - Send Markdown Message to a Room
+      community.general.cisco_webex:
+        recipient_type: roomId
+        recipient_id: "{{ recipient_id }}"
+        msg_type: markdown
+        personal_token: "{{ personal_token }}"
+        msg: "This is the first line of text<br>
+              This is the second line of text<br>
+              This is the third line of text"
+
+#
+#################################################################
+
+
     - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
         action: export
