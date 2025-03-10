@@ -121,7 +121,7 @@
 
     - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
-        path: "{{ vault_kv_path }}"
+        path: "{{ fqdn }}"
         url: "{{ vault_url }}"
         auth_method: "{{ vault_auth_method }}"
         token: "{{ vault_token }}"
