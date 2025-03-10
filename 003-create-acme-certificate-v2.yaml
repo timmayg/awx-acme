@@ -101,28 +101,6 @@
       register: cloudflare_dns_delete
       ignore_errors: true
 
-#  tshoot webex reporting
-#################################################################
-#
-# Add some Webex Room Reporting, Subject , Issue Date, Expiry Date, SAN
-
-    - name: AA - Get certificate information
-      community.crypto.x509_certificate_info:
-        path: "{{ fqdn }}.cer"
-
-    - name: BB - Cisco Webex Teams - Send Markdown Message to a Room
-      community.general.cisco_webex:
-        recipient_type: roomId
-        recipient_id: "{{ recipient_id }}"
-        personal_token: "{{ personal_token }}"
-        msg_type: markdown
-        msg: "This is the first line of text<br>
-              This is the second line of text<br>
-              This is the third line of text"
-
-#
-#################################################################
-
 
     - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
@@ -155,6 +133,32 @@
           chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
           fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
           p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+
+
+    - name: 13 - Get certificate information
+      community.crypto.x509_certificate_info:
+        path: "{{ fqdn }}.cer"
+      register: cert_info
+
+
+#  tweak&tshoot webex reporting
+#################################################################
+#
+# Add some Webex Room Reporting, Subject , Issue Date, Expiry Date, SAN
+
+    - name: BB - Cisco Webex Teams - Send Markdown Message to a Room
+      community.general.cisco_webex:
+        recipient_type: roomId
+        recipient_id: "{{ recipient_id }}"
+        personal_token: "{{ personal_token }}"
+        msg_type: markdown
+        msg: "Certificate Subject: <br>
+              Certificate Validity Begins: <br>
+              Certificate Validity Ends: <br>
+              Certificate Issuer: <br>"
+
+#
+#################################################################
 
 
 
