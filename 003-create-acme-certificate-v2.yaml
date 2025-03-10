@@ -146,30 +146,30 @@
 #
 # Add some Webex Room Reporting, Subject , Issue Date, Expiry Date, SAN
 
-- name: BB - Cisco Webex Teams - Send Markdown Message to a Room
-  community.general.cisco_webex:
-    recipient_type: roomId
-    recipient_id: "{{ recipient_id }}"
-    personal_token: "{{ personal_token }}"
-    msg_type: markdown
-    msg: |
-      **📜 Certificate Details**
-      
-      - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
-      - **Subject Alternative Names:** `{{ cert_info.subject_alt_name | join(', ') }}`
-      - **🔑 Public Key Type:** `{{ cert_info.public_key_type }}`
-      
-      **🔍 Validity**
-      - **Valid From:** `{{ cert_info.not_before }}`
-      - **Valid Until:** `{{ cert_info.not_after }}`
-      
-      **🔏 Issuer Information**
-      - **Issuer Name:** `{{ cert_info.issuer.commonName }}`
-      - **Issuer Organization:** `{{ cert_info.issuer.organizationName }}`
-      
-      **🔒 Fingerprints**
-      - **SHA-256 Fingerprint:** `{{ cert_info.fingerprints.sha256 }}`
-      - **SHA-1 Fingerprint:** `{{ cert_info.fingerprints.sha1 }}`
+    - name: BB - Cisco Webex Teams - Send Markdown Message to a Room
+      community.general.cisco_webex:
+        recipient_type: roomId
+        recipient_id: "{{ recipient_id }}"
+        personal_token: "{{ personal_token }}"
+        msg_type: markdown
+        msg: |
+          **📜 Certificate Details**
+          
+          - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
+          - **Subject Alternative Names:** `{{ cert_info.subject_alt_name | join(', ') }}`
+          - **🔑 Public Key Type:** `{{ cert_info.public_key_type }}`
+          
+          **🔍 Validity**
+          - **Valid From:** `{{ cert_info.not_before }}`
+          - **Valid Until:** `{{ cert_info.not_after }}`
+          
+          **🔏 Issuer Information**
+          - **Issuer Name:** `{{ cert_info.issuer.commonName }}`
+          - **Issuer Organization:** `{{ cert_info.issuer.organizationName }}`
+          
+          **🔒 Fingerprints**
+          - **SHA-256 Fingerprint:** `{{ cert_info.fingerprints.sha256 }}`
+          - **SHA-1 Fingerprint:** `{{ cert_info.fingerprints.sha1 }}`
 
 #
 #################################################################
