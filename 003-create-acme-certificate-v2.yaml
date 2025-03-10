@@ -113,7 +113,7 @@
         state: present
 
 #
-#  Can this be done natively  
+#  Can this be done natively
 #
     - name: 11 - Encode the PKCS12 file to base64 Text
       ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
@@ -125,7 +125,7 @@
         url: "{{ vault_url }}"
         auth_method: "{{ vault_auth_method }}"
         token: "{{ vault_token }}"
-        engine_mount_point: "{{ vault_mount }}”
+        engine_mount_point: "{{ vault_mount }}"
         data:
           public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
           private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
