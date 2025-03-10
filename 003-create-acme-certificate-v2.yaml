@@ -65,10 +65,10 @@
       register: cloudflare_dns_create
 
 
-    - name: 07 - Pause the Playbook for 20 seconds
+    - name: 07 - Pause the Playbook for 20 seconds if there are pending DNS-01 challenges
       ansible.builtin.pause:
         seconds: 20
-      # when: challenge_status == 'pending'
+      when: pending_challenges | length > 0
 
 
     - name: 08 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
