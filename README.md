@@ -5,8 +5,13 @@
 
 Obtaining Certificates from Let's Encrypt is easy. 
 
-First Create a Let's Encrypt Account
+First Create a Private Key
+/000-create-ec384-key.yaml
 
-Next, Request a Certificate
+Next, Create a Let's Encrypt Account
+/001-Create-Acme-Account-v2.yaml
 
+Request a Certificate
+/003-create-acme-certificate-v2.yaml
 
+Done!
