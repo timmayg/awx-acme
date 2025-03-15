@@ -11,6 +11,7 @@
 #
 
 
+
   tasks:
     - name: 01 - Generate a EC384 bit ECC Private Key
       community.crypto.openssl_privatekey:

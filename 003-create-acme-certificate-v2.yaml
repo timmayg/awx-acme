@@ -32,8 +32,8 @@
 
     - name: 04 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
-        account_email: "{{ contact }}"
-        account_key_content: "{{ key }}"
+        account_email: "{{ acme_contact }}"
+        account_key_content: "{{ acme_key }}"
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
@@ -73,8 +73,8 @@
 
     - name: 08 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
       community.crypto.acme_certificate:
-        account_email: "{{ contact }}"
-        account_key_content: "{{ key }}"
+        account_email: "{{ acme_contact }}"
+        account_key_content: "{{ acme_key }}"
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
