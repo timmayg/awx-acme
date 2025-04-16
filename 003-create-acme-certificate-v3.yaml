@@ -43,7 +43,7 @@
         challenge: dns-01
         # Renew if the certificate is at least 30 days old
         remaining_days: 60
-        profile: tlsserver   # classic (certs same as always), shortlived (6 day cert life)
+        profile: " {{ acme_profile }}"  # classic (certs same as always), shortlived (6 day cert life)
       register: challenge_response
 
 
