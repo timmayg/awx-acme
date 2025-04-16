@@ -1,0 +1,181 @@
+---
+- name: Create a Certificate using ACME and Store it in Vault
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: DEBUG - Print
+      ansible.builtin.debug:
+        msg: "The fqdn for this certificate will be {{ fqdn }}."
+
+    - name: 01 - Generate a Private Key for the FQDN
+      community.crypto.openssl_privatekey:
+        curve: secp384r1
+        type: ECC
+        path: "{{ fqdn }}.key"
+
+
+    - name: 02 - Generate an OpenSSL public key in PEM format
+      community.crypto.openssl_publickey:
+        path: "{{ fqdn }}.pub"
+        privatekey_path: "{{ fqdn }}.key"
+
+
+    - name: 03 - Generate an OpenSSL Certificate Signing Request
+      community.crypto.openssl_csr:
+        path: "{{ fqdn }}.csr"
+        privatekey_path: "{{ fqdn }}.key"
+        common_name: "{{ fqdn }}"
+        subject_alt_name: "{{ sans | default(omit) }}"
+
+
+    - name: 04 - Create the initial ACME Challenge
+      community.crypto.acme_certificate:
+        account_email: "{{ acme_contact }}"
+        account_key_content: "{{ acme_key }}"
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+        csr: "{{ fqdn }}.csr"
+        cert: "{{ fqdn }}.cer"
+        chain: "{{ fqdn }}.chain"
+        fullchain: "{{ fqdn }}.fullchain }}"
+        challenge: dns-01
+        # Renew if the certificate is at least 30 days old
+        remaining_days: 60
+        profile: tlsserver
+      register: challenge_response
+
+
+    - name: 05 - Extract pending DNS-01 challenges
+      ansible.builtin.set_fact:
+        pending_challenges: "{{ challenge_response.authorizations | default({}) | dict2items | selectattr('value.status', 'equalto', 'pending') | list }}"
+
+
+    - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
+      community.general.cloudflare_dns:
+        api_token: "{{ cloudflare_api_key }}"
+        record: "{{ item.value['dns-01']['record'] }}"
+        type: TXT
+        value: "{{ item.value['dns-01']['resource_value'] }}"
+        state: present
+        zone: "{{ zone }}"
+      loop: "{{ challenge_response.challenge_data | dict2items | selectattr('value.dns-01', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.value['dns-01']['record'] }}"
+      register: cloudflare_dns_create
+
+
+    - name: 07 - Pause the Playbook for 20 seconds if there are pending DNS-01 challenges
+      ansible.builtin.pause:
+        seconds: 20
+      when: pending_challenges | length > 0
+
+
+    - name: 08 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
+      community.crypto.acme_certificate:
+        account_email: "{{ acme_contact }}"
+        account_key_content: "{{ acme_key }}"
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+        csr: "{{ fqdn }}.csr"
+        cert: "{{ fqdn }}.cer"
+        chain: "{{ fqdn }}.chain"
+        fullchain: "{{ fqdn }}.fullchain"
+        challenge: dns-01
+        # Renew if the certificate is at least 30 days old
+        remaining_days: 60
+        data: "{{ challenge_response }}"
+      register: certificate_response
+
+
+    - name: 09 - Delete DNS TXT record after validation
+      community.general.cloudflare_dns:
+        api_token: "{{ cloudflare_api_key }}"
+        record: "{{ item.value['dns-01']['record'] }}"
+        type: TXT
+        state: absent
+        zone: "{{ zone }}"
+      loop: "{{ challenge_response.challenge_data | dict2items | selectattr('value.dns-01', 'defined') | list }}"
+      loop_control:
+        label: "{{ item.value['dns-01']['record'] }}"
+      register: cloudflare_dns_delete
+      ignore_errors: true
+
+
+    - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+      community.crypto.openssl_pkcs12:
+        action: export
+        friendly_name: "{{ fqdn }}"
+        privatekey_path: "{{ fqdn }}.key"
+        certificate_path: "{{ fqdn }}.fullchain"
+        path: pkcs12_file.bin.p12
+        passphrase: "{{ pkcs12_passphrase }}"
+        state: present
+
+
+#
+#  Can this be done natively
+#
+    - name: 11 - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
+
+
+    - name: 12 - Write the New Certificate to Vault
+      community.hashi_vault.vault_kv2_write:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        data:
+          public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
+          private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
+          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
+          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
+          fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
+          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
+          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+
+
+    - name: 13 - Get certificate information
+      community.crypto.x509_certificate_info:
+        path: "{{ fqdn }}.cer"
+      register: cert_info
+
+
+    - name: 14 - Send a Webex Message with the Certificate Information to Tims AWX Space
+      community.general.cisco_webex:
+        recipient_type: roomId
+        recipient_id: "{{ recipient_id }}"
+        personal_token: "{{ personal_token }}"
+        msg_type: markdown
+        msg: |
+          🌟 **Certificate Report** _(Generated on {{ lookup('pipe', 'date +"%Y-%m-%d %H:%M:%S %Z"') }})_
+
+          ---
+
+          📜 **Certificate Details**
+          - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
+          - **Subject Alternative Names:** `{{ cert_info.subject_alt_name | join(', ') }}`
+          - **🔑 Public Key Type:** `{{ cert_info.public_key_type }}`
+
+          🔍 **Validity**
+          - **Valid From:** `{{ cert_info.not_before }}`
+          - **Valid Until:** `{{ cert_info.not_after }}`
+
+          🔏 **Issuer Information**
+          - **Issuer Name:** `{{ cert_info.issuer.commonName }}`
+          - **Issuer Organization:** `{{ cert_info.issuer.organizationName }}`
+
+          🔒 **Fingerprints**
+          - **SHA-256 Fingerprint:** `{{ cert_info.fingerprints.sha256 }}`
+          - **SHA-1 Fingerprint:** `{{ cert_info.fingerprints.sha1 }}`
+
+          ---
+
+          ⏳ *This report was automatically generated by your AWX automation at the exact time shown above.*
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
