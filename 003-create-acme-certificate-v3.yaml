@@ -43,7 +43,7 @@
         challenge: dns-01
         # Renew if the certificate is at least 30 days old
         remaining_days: 60
-        profile: tlsserver
+        profile: tlsserver   # classic (certs same as always), shortlived (6 day cert life)
       register: challenge_response
 
 
@@ -143,6 +143,8 @@
         path: "{{ fqdn }}.cer"
       register: cert_info
 
+# This line was moved out of the Certificate Details section
+# - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
 
     - name: 14 - Send a Webex Message with the Certificate Information to Tims AWX Space
       community.general.cisco_webex:
@@ -156,7 +158,7 @@
           ---
 
           📜 **Certificate Details**
-          - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
+          
           - **Subject Alternative Names:** `{{ cert_info.subject_alt_name | join(', ') }}`
           - **🔑 Public Key Type:** `{{ cert_info.public_key_type }}`
 
