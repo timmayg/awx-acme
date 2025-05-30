@@ -140,29 +140,29 @@
 #     when: challenge_status == 'pending'  
 
 
-    - name: 11new - Wait for DNS TXT record to propagate
-      ansible.builtin.wait_for:
-        timeout: 180
-        delay: 10
-        state: started
-        port: 53
-        host: 8.8.8.8
-        search_regex: "{{ dns_01_challenge_text }}"
-        msg: "Timed out waiting for DNS TXT record to propagate."
-      delegate_to: localhost
-      when: challenge_status == 'pending'
+   - name: 11new - Wait for DNS TXT record to propagate
+     ansible.builtin.wait_for:
+       timeout: 180
+       delay: 10
+       state: started
+       port: 53
+       host: 8.8.8.8
+       search_regex: "{{ dns_01_challenge_text }}"
+       msg: "Timed out waiting for DNS TXT record to propagate."
+     delegate_to: localhost
+     when: challenge_status == 'pending'
 
-    - name: 12new - Confirm DNS record via dig before ACME validation
-      ansible.builtin.command: >
-        dig TXT {{ dns_01_challenge_fqdn }}.{{ zone }} @8.8.8.8 +short
-      register: dig_result
-      changed_when: false
-      when: challenge_status == 'pending'
+   - name: 12new - Confirm DNS record via dig before ACME validation
+     ansible.builtin.command: >
+       dig TXT {{ dns_01_challenge_fqdn }}.{{ zone }} @8.8.8.8 +short
+     register: dig_result
+     changed_when: false
+     when: challenge_status == 'pending'
 
-    - name: 13new - Fail if DNS TXT record is not found
-      ansible.builtin.fail:
-        msg: "TXT record for ACME challenge was not found: {{ dig_result.stdout }}"
-      when: "'{{ dns_01_challenge_text }}' not in dig_result.stdout"
+   - name: 13new - Fail if DNS TXT record is not found
+     ansible.builtin.fail:
+       msg: "TXT record for ACME challenge was not found: {{ dig_result.stdout }}"
+     when: "'{{ dns_01_challenge_text }}' not in dig_result.stdout"
 
 
 
