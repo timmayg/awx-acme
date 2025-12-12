@@ -15,13 +15,13 @@
      community.crypto.openssl_privatekey:
        type: RSA
        #size: 4096
-       path: "private.key"
+       path: ~/le_private_key.pem
 
 
    - name: 02 - Extract the Public Key
      community.crypto.openssl_publickey:
-       path: "public.key"
-       privatekey_path: "private.key"
+       path: ~/le_public_key.pem
+       privatekey_path: ~/le_private_key.pem
 
 
 
