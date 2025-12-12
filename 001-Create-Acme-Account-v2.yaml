@@ -38,7 +38,7 @@
           private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
 
 
-    - name: 05 - Create ACME account on the server
+    - name: 04 - Create ACME account on the Lets Encrypt Server
       community.crypto.acme_account:
         account_key_src: ~/le_private_key.pem
         acme_directory: "{{ acme_directory }}"
@@ -50,7 +50,7 @@
       register: acme_account
 
 
-    - name: 06 - Display ACME account details
+    - name: 05 - Display ACME account details
       ansible.builtin.debug:
         var: acme_account
 
