@@ -2,20 +2,16 @@
 - name: Check that an ACME account Exists with ACME Server
   hosts: localhost
   gather_facts: false
-  vars:
-   vault_url: "https://vault.theglens.net:8200"
-   vault_mount: "kv"
-
  
   tasks:
 
    - name: 01 - Read The Let's Encrypt Private Key from Vault
      community.hashi_vault.vault_kv2_get:
-      url: "{{ vault_url }}"
-      engine_mount_point: "{{ vault_mount }}"
-      path: "{{ key_name }}"
-      auth_method: token
-      token: "{{ ansible_password }}"
+       path: "{{ key_name }}"
+       url: "{{ vault_url }}"
+       auth_method: "{{ vault_auth_method  }}"
+       token: "{{ vault_token }}"
+       engine_mount_point: "{{ vault_mount }}"
       # version: "{{ key_ver }}"
      register: response
 
