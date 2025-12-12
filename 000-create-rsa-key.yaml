@@ -9,7 +9,7 @@
   tasks:
    - name: print a message
      ansible.builtin.debug:
-       msg: "v2.5"
+       msg: "Internal version v3.0"
 
    - name: 01 - Generate a 4096 bit RSA Private Key
      community.crypto.openssl_privatekey:
@@ -24,15 +24,15 @@
        privatekey_path: "private.key"
 
 
-   - name: Create a new secret and store the two keys
+
+   - name: 03 - Create a new secret and store the two keys
      community.hashi_vault.vault_kv2_write:
-       url: "https://vault.theglens.net:8200"
        path: "{{ key_name }}"
-       auth_method: token
-       token: "{{ ansible_password }}"
-       engine_mount_point: "kv"
-       data: 
-         public_key: "{{ lookup('file', 'public.key') }}"
-         private_key: "{{ lookup('file', 'private.key') }}"
-
-
+       url: "{{ vault_url }}"
+       auth_method: "{{ vault_auth_method  }}"
+       token: "{{ vault_token }}"
+       engine_mount_point: "{{ vault_mount }}"
+       data:
+        public_key: "{{ lookup('file', '~/le_public_key.pem') }}"
+        private_key: "{{ lookup('file', '~/le_private_key.pem') }}"
+     register: rsa_write
