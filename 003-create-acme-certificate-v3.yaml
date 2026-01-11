@@ -5,16 +5,9 @@
 
   tasks:
 
-    - name: DEBUG - Print
+    - name: Print the name of the FQDN
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
-
-
-#    - name: 01 - Generate a Private Key for the FQDN
-#      community.crypto.openssl_privatekey:
-#        curve: secp384r1
-#        type: ECC
-#        path: "{{ fqdn }}.key"
 
 
     - name: 01 - Generate a Private Key for the FQDN
