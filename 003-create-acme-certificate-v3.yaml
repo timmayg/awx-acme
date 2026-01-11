@@ -9,10 +9,18 @@
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
+
+#    - name: 01 - Generate a Private Key for the FQDN
+#      community.crypto.openssl_privatekey:
+#        curve: secp384r1
+#        type: ECC
+#        path: "{{ fqdn }}.key"
+
+
     - name: 01 - Generate a Private Key for the FQDN
       community.crypto.openssl_privatekey:
-        curve: secp384r1
-        type: ECC
+        type: "{{ key_type }}"
+        curve: "{{ 'secp384r1' if key_type == 'ECC' else omit }}"
         path: "{{ fqdn }}.key"
 
 
