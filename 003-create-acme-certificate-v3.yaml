@@ -168,7 +168,11 @@
           📜 **Certificate Details**
           - **Subject Alternative Names:** `{{ cert_info.subject_alt_name | join(', ') }}`
           - **🔑 Public Key Type:** `{{ cert_info.public_key_type }}`
-          - **🔑 Public Key Size:** `{{ cert_info.public_key_data.exponent_size }}`
+          - **🔑 Public Key Size:** `{{ 
+              cert_info.public_key_data.exponent_size 
+                if cert_info.public_key_type == 'ECC' 
+                else cert_info.public_key_data.size 
+            }}`
 
           🔍 **Validity**
           - **Valid From:** `{{ cert_info.not_before }}`
