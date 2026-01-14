@@ -13,10 +13,6 @@
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
 #    - name: 01 - Generate a Private Key for the FQDN
 #      community.crypto.openssl_privatekey:
 #        type: "{{ key_type }}"
@@ -57,7 +53,7 @@
         fullchain: "{{ fqdn }}.fullchain }}"
         challenge: dns-01
         # Renew if the certificate is at least 30 days old
-        remaining_days: 60
+        # remaining_days: 60
         profile: "{{ acme_profile }}"  # tlsserver, classic (certs same as always), shortlived (6 day cert life)
       register: challenge_response
 
@@ -99,7 +95,7 @@
         fullchain: "{{ fqdn }}.fullchain"
         challenge: dns-01
         # Renew if the certificate is at least 30 days old
-        remaining_days: 60
+        # remaining_days: 60
         data: "{{ challenge_response }}"
       register: certificate_response
 
