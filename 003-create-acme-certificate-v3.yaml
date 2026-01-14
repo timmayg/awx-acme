@@ -52,6 +52,7 @@
         chain: "{{ fqdn }}.chain"
         fullchain: "{{ fqdn }}.fullchain }}"
         challenge: dns-01
+        include_renewal_cert_id: when_ari_supported 
         # Renew if the certificate is at least 30 days old
         # remaining_days: 60
         profile: "{{ acme_profile }}"  # tlsserver, classic (certs same as always), shortlived (6 day cert life)
