@@ -3,9 +3,8 @@
   hosts: localhost
   gather_facts: false
 
-# test comment feature/acme-ari
-# mroe comments
-# more comments
+# This is NOT a PROD file, 
+# This is part of the Github branch  
 
   tasks:
 
@@ -95,6 +94,7 @@
         chain: "{{ fqdn }}.chain"
         fullchain: "{{ fqdn }}.fullchain"
         challenge: dns-01
+        include_renewal_cert_id: when_ari_supported 
         # Renew if the certificate is at least 30 days old
         # remaining_days: 60
         data: "{{ challenge_response }}"
