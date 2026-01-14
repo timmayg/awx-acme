@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: false
 
+# test comment feature/acme-ari
+# mroe comments
+
   tasks:
 
     - name: Print the name of the FQDN
