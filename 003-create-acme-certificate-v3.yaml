@@ -101,6 +101,13 @@
       register: certificate_response
 
 
+    - name: 08a - Get ARI renewal info
+      community.crypto.acme_ari_info:
+        acme_directory: "{{ acme_directory }}"
+        cert: "{{ fqdn }}.cer"
+      register: ari_info
+
+
     - name: 09 - Delete DNS TXT record after validation
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
