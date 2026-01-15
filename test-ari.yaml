@@ -31,10 +31,21 @@
       register: ari_info
 
 
-    - name: 03 - Set Some Facts and Check to See if its within ARI Renewal Time
+    - name: 03 - Is the ARI Renewal Time Window Open
       set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+
+
+    - name: 04 - Stop if not in ARI Window False 
+      meta: end_play
+      when: not allow_renewal
+
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
 
 
     - name: Stop if ARI renewal window has not started
@@ -44,10 +55,6 @@
           Now: {{ now_utc }}
           ARI window starts: {{ ari_info.renewal_info.suggestedWindow.start }}
       when: not allow_renewal
-
-
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
 
 
 
