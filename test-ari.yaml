@@ -23,11 +23,12 @@
 
 
 
-    - name: 08a - Get ARI renewal info
+    - name: 02 - Get ARI renewal info
       community.crypto.acme_ari_info:
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
-        certificate_path: "{{ fqdn }}.cer"
+        certificate_content: "{{ kv2_secret.data.data.cert }}"
+        # certificate_path: "{{ fqdn }}.cer"
       register: ari_info
 
 
