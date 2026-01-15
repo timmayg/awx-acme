@@ -33,19 +33,19 @@
 
 
 
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
+    - set_fact:
+        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime | int }}"
+        ari_end_epoch:   "{{ ari_info.renewal_info.suggestedWindow.end   | to_datetime | int }}"
+        ari_retry_epoch: "{{ ari_info.renewal_info.retryAfter             | to_datetime | int }}"
+        now_epoch:       "{{ ansible_date_time.epoch | int }}"
 
 
     - set_fact:
-        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime | int }}"
-        ari_end_epoch: "{{ ari_info.renewal_info.suggestedWindow.end | to_datetime | int }}"
-        ari_retry_epoch: "{{ ari_info.renewal_info.retryAfter | to_datetime | int }}"
+        allow_renewal: "{{ now_epoch >= ari_start_epoch }}"
 
 
 
 
-
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
 
