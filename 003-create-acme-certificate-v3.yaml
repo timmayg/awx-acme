@@ -53,7 +53,7 @@
           - "Allow renewal:      {{ allow_renewal }}"
 
 
-    - name: 0e - Stop if not in ARI Window False 
+    - name: 0e - Stop Running Tasks if Not in ARI Window 
       meta: end_play
       when: not allow_renewal
 
