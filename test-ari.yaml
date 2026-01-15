@@ -33,6 +33,20 @@
 
 
     - set_fact:
+        now_utc: "{{ ansible_date_time.iso8601 }}"
+
+    - set_fact:
+        allow_renewal: >-
+          {{ now_utc >= ari_info.renewal_info.suggestedWindow.start }}
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
+
+    - set_fact:
         ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start}}"
 
 
