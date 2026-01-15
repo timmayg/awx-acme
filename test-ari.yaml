@@ -31,6 +31,12 @@
         # certificate_path: "{{ fqdn }}.cer"
       register: ari_info
 
+    - set_fact:
+        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime('%Y-%m-%dT%H:%M:%SZ') | int }}"
+        ari_end_epoch:   "{{ ari_info.renewal_info.suggestedWindow.end   | to_datetime('%Y-%m-%dT%H:%M:%SZ') | int }}"
+        ari_retry_epoch: "{{ ari_info.renewal_info.retryAfter             | to_datetime('%Y-%m-%dT%H:%M:%S.%f%z') | int }}"
+        now_epoch:       "{{ ansible_date_time.epoch | int }}"
+
 
 
     - set_fact:
