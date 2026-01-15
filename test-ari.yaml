@@ -8,7 +8,7 @@
 
   tasks:
 
-    - name: 01 - Read A Test Certificate from Vault
+    - name: 0a - Read A Test Certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ vault_kv_path }}"
         url: "{{ vault_url }}"
@@ -22,7 +22,7 @@
       # no_log: true
 
 
-    - name: 02 - Get ARI renewal info
+    - name: 0b - Get ARI renewal info
       community.crypto.acme_ari_info:
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
@@ -31,13 +31,13 @@
       register: ari_info
 
 
-    - name: 03 - Is the ARI Renewal Time Window Open
+    - name: 0c - Is the ARI Renewal Time Window Open
       set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
-    - name: 04 - Print ARI timing and renewal decision
+    - name: 0d - Print ARI timing and renewal decision
       debug:
         msg:
           - "Current time (UTC): {{ now_utc }}"
@@ -46,7 +46,7 @@
           - "Allow renewal:      {{ allow_renewal }}"
 
 
-    - name: 05 - Stop if not in ARI Window False 
+    - name: 0e - Stop if not in ARI Window False 
       meta: end_play
       when: not allow_renewal
 
@@ -54,54 +54,6 @@
 
     - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
-
-
-
-    - name: Print a test message
-      debug:
-        msg: "Hello — this task ran successfully."
-
-
-    - name: Stop if ARI renewal window has not started
-      ansible.builtin.fail:
-        msg: >
-          Renewal not allowed yet.
-          Now: {{ now_utc }}
-          ARI window starts: {{ ari_info.renewal_info.suggestedWindow.start }}
-      when: not allow_renewal
-
-
-
-    - name: 03 - Set Some Facts and Check to See if its within ARI Renewal Time
-      set_fact:
-        now_utc: "{{ ansible_date_time.iso8601 }}"
-        allow_renewal: >-
-          {{ now_utc >= ari_info.renewal_info.suggestedWindow.start }}
-
-
-
-
-
-    - set_fact:
-        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start}}"
-
-
-    - set_fact:
-        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | int }}"
-
-
-    - set_fact:
-        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime('%Y-%m-%dT%H:%M:%SZ') | int }}"
-        ari_end_epoch:   "{{ ari_info.renewal_info.suggestedWindow.end   | to_datetime('%Y-%m-%dT%H:%M:%SZ') | int }}"
-        ari_retry_epoch: "{{ ari_info.renewal_info.retryAfter             | to_datetime('%Y-%m-%dT%H:%M:%S.%f%z') | int }}"
-        now_epoch:       "{{ ansible_date_time.epoch | int }}"
-
-
-    - set_fact:
-        allow_renewal: "{{ now_epoch >= ari_start_epoch }}"
-
-
-
 
     - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play

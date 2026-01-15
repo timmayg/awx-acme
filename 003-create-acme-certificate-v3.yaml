@@ -12,11 +12,56 @@
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
-#    - name: 01 - Generate a Private Key for the FQDN
-#      community.crypto.openssl_privatekey:
-#        type: "{{ key_type }}"
-#        curve: "{{ 'secp384r1' if key_type == 'ECC' else omit }}"
-#        path: "{{ fqdn }}.key"
+
+
+    - name: 0a - Read A Test Certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        version: "{{ vault_kv_version | default(omit) }}"
+      register: kv2_secret
+      delegate_to: localhost
+      run_once: true
+      # no_log: true
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+    - name: 0b - Get ARI renewal info
+      community.crypto.acme_ari_info:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+        certificate_content: "{{ kv2_secret.data.data.cert }}"
+        # certificate_path: "{{ fqdn }}.cer"
+      register: ari_info
+
+
+    - name: 0c - Is the ARI Renewal Time Window Open
+      set_fact:
+        now_utc: "{{ ansible_date_time.iso8601 }}"
+        allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+
+
+    - name: 0d - Print ARI timing and renewal decision
+      debug:
+        msg:
+          - "Current time (UTC): {{ now_utc }}"
+          - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
+          - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
+          - "Allow renewal:      {{ allow_renewal }}"
+
+
+    - name: 0e - Stop if not in ARI Window False 
+      meta: end_play
+      when: not allow_renewal
+
+
+
 
     - name: 01 - Generate a Private Key for the FQDN
       community.crypto.openssl_privatekey:
