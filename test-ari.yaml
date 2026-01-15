@@ -8,7 +8,6 @@
 
   tasks:
 
-
     - name: 01 - Read A Test Certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ vault_kv_path }}"
@@ -23,10 +22,6 @@
       # no_log: true
 
 
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
-
-
 
     - name: 08a - Get ARI renewal info
       community.crypto.acme_ari_info:
@@ -34,6 +29,14 @@
         acme_version: 2
         certificate_path: "{{ fqdn }}.cer"
       register: ari_info
+
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
 
     - set_fact:
         ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime | int }}"
