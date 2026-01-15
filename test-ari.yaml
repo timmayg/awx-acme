@@ -1,7 +1,7 @@
 ---
 - name: Check ACME Renewal Info for a Certificate
   hosts: localhost
-  gather_facts: false
+  gather_facts: true
 
 # This is NOT a PROD file, 
 # This is part of the Github branch  
