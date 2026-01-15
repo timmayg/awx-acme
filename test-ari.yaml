@@ -42,6 +42,10 @@
       when: not allow_renewal
 
 
+    - name: 05 - Print allow_renewal state
+      debug:
+        msg: "allow_renewal = {{ allow_renewal }}"
+
 
     - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
