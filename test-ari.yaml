@@ -1,0 +1,47 @@
+---
+- name: Check ACME Renewal Info for a Certificate
+  hosts: localhost
+  gather_facts: false
+
+# This is NOT a PROD file, 
+# This is part of the Github branch  
+
+  tasks:
+
+
+    - name: 01 - Read A Test Certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ vault_kv_path }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        version: "{{ vault_kv_version | default(omit) }}"
+      register: kv2_secret
+      delegate_to: localhost
+      run_once: true
+      # no_log: true
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
+
+
+
+    - name: 08a - Get ARI renewal info
+      community.crypto.acme_ari_info:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+        certificate_path: "{{ fqdn }}.cer"
+      register: ari_info
+
+    - set_fact:
+        ari_start_epoch: "{{ ari_info.renewal_info.suggestedWindow.start | to_datetime | int }}"
+        ari_end_epoch: "{{ ari_info.renewal_info.suggestedWindow.end | to_datetime | int }}"
+        ari_retry_epoch: "{{ ari_info.renewal_info.retryAfter | to_datetime | int }}"
+
+
+
+
+
+
