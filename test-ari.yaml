@@ -37,19 +37,29 @@
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
-    - name: 04 - Stop if not in ARI Window False 
+    - name: 04 - Print ARI timing and renewal decision
+      debug:
+        msg:
+          - "Current time (UTC): {{ now_utc }}"
+          - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
+          - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
+          - "Allow renewal:      {{ allow_renewal }}"
+
+
+    - name: 05 - Stop if not in ARI Window False 
       meta: end_play
       when: not allow_renewal
 
-
-    - name: Print a test message
-      debug:
-        msg: "Hello — this task ran successfully."
 
 
     - name: DEBUG - Timmay HARD STOP this Playbook
       ansible.builtin.meta: end_play
 
+
+
+    - name: Print a test message
+      debug:
+        msg: "Hello — this task ran successfully."
 
 
     - name: Stop if ARI renewal window has not started
