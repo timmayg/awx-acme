@@ -32,12 +32,12 @@
 
     - block:
 
-        - name: 0c - Get ARI renewal info
-          community.crypto.acme_ari_info:
-            acme_directory: "{{ acme_directory }}"
-            acme_version: 2
-            certificate_content: "{{ vault_cert.data.data.cert }}"
-          register: ari_info
+    - name: 0c - Get ARI renewal info
+      community.crypto.acme_ari_info:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
+        certificate_content: "{{ vault_cert.data.data.cert }}"
+      register: ari_info
 
 
     - name: 0c - Is the ARI Renewal Time Window Open
