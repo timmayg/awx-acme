@@ -4,7 +4,7 @@
   gather_facts: true
 
 # This is NOT a PROD file, 
-# This is part of the Github branch  feature/acme-ari
+# This is part of the Github branch  feature/ari-plus-new-cert-check
 
   tasks:
 
@@ -13,38 +13,41 @@
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
-    - name: 0a - Read the Certificate from Vault, This Helps with ARI Check
+    - name: 0a - Attempt to read existing certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
         auth_method: "{{ vault_auth_method }}"
         token: "{{ vault_token }}"
         engine_mount_point: "{{ vault_mount }}"
-        version: "{{ vault_kv_version | default(omit) }}"
-      register: ari_validate_cert
-      #delegate_to: localhost
-      #delegate_to: 
-      # run_once: true
-      # no_log: true
+      register: vault_cert
+      failed_when: false
+      changed_when: false
+
+    - name: 0b - Determine if this is a new certificate
+      set_fact:
+        is_new_cert: "{{ vault_cert.failed | default(false) }}"
 
 
-    - name: 0b - Get ARI renewal info
-      community.crypto.acme_ari_info:
-        acme_directory: "{{ acme_directory }}"
-        acme_version: 2
-        certificate_content: "{{ ari_validate_cert.data.data.cert }}"
-        # certificate_path: "{{ fqdn }}.cer"
-      register: ari_info
+
+    - block:
+
+        - name: 0c - Get ARI renewal info
+          community.crypto.acme_ari_info:
+            acme_directory: "{{ acme_directory }}"
+            acme_version: 2
+            certificate_content: "{{ vault_cert.data.data.cert }}"
+          register: ari_info
 
 
     - name: 0c - Is the ARI Renewal Time Window Open
-      ansible.builtin.set_fact:
+      ansbible.builtin.set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
     - name: 0d - Print ARI timing and renewal decision
-      ansible.builtin.debug:
+      ansbible.builtin.debug:
         msg:
           - "Current time (UTC): {{ now_utc }}"
           - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
@@ -53,12 +56,15 @@
 
 
     - name: 0e - Stop Running Tasks if Not in ARI Window 
-      ansible.builtin.meta: end_play
+      ansbible.builtin.meta: end_play
       when: not allow_renewal
 
+      when:
+        - not is_new_cert
+        - vault_cert.data is defined
 
     - name: 0f - Print Keep on Going if in ARI Window
-      ansible.builtin.meta: end_play
+      ansbible.builtin.meta: end_play
       when: not allow_renewal
 
 
