@@ -31,6 +31,12 @@
 
 
     - block:
+    
+        - name: The Cert Exists Now Check for ARI
+          ansible.builtin.debug:
+            msg: "The Cert Exists Now Check for ARI."
+
+
         - name: 0c - Get ARI renewal info
           community.crypto.acme_ari_info:
             acme_directory: "{{ acme_directory }}"
