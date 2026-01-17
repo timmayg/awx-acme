@@ -85,13 +85,13 @@
 
 
     - name: 0c - Is the ARI Renewal Time Window Open
-      ansbible.builtin.set_fact:
+      ansible.builtin.set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
     - name: 0d - Print ARI timing and renewal decision
-      ansbible.builtin.debug:
+      ansible.builtin.debug:
         msg:
           - "Current time (UTC): {{ now_utc }}"
           - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
@@ -100,12 +100,12 @@
 
 
     - name: 0e - Stop Running Tasks if Not in ARI Window 
-      ansbible.builtin.meta: end_play
+      ansible.builtin.meta: end_play
       when: not allow_renewal
 
 
     - name: 0f - Print Keep on Going if in ARI Window
-      ansbible.builtin.meta: end_play
+      ansible.builtin.meta: end_play
       when: not allow_renewal
 
 
