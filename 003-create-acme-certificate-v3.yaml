@@ -52,9 +52,9 @@
               - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
               - "Allow renewal:      {{ allow_renewal }}"
 
-        - name: 0f - Stop if not in ARI window
-          ansible.builtin.meta: end_play
-          when: not allow_renewal
+#        - name: 0f - Stop if not in ARI window
+#          ansible.builtin.meta: end_play
+#          when: not allow_renewal
 
       when:
         - not is_new_cert
