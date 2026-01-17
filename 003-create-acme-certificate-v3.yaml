@@ -4,13 +4,60 @@
   gather_facts: true
 
 # This is NOT a PROD file, 
-# This is part of the Github branch  feature/acme-ari
+# This is part of the Github branch  feature/ari-plus-new-cert-check
 
   tasks:
 
     - name: Print the name of the FQDN
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
+
+
+    - name: 0a - Attempt to read existing certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+      register: vault_cert
+      failed_when: false
+      changed_when: false
+
+    - name: 0b - Determine if this is a new certificate
+      set_fact:
+        is_new_cert: "{{ vault_cert.failed | default(false) }}"
+
+    - block:
+        - name: 0c - Get ARI renewal info
+          community.crypto.acme_ari_info:
+            acme_directory: "{{ acme_directory }}"
+            certificate_content: "{{ vault_cert.data.data.cert }}"
+          register: ari_info
+
+        - name: 0d - Check ARI window
+          set_fact:
+            allow_renewal: >-
+              {{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}
+
+        - name: 0e - Print ARI decision
+          debug:
+            msg:
+              - "Current time (UTC): {{ ansible_date_time.iso8601 }}"
+              - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
+              - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
+              - "Allow renewal:      {{ allow_renewal }}"
+
+        - name: 0f - Stop if not in ARI window
+          meta: end_play
+          when: not allow_renewal
+
+      when: not is_new_cert
+
+
+
+    - name: DEBUG - Timmay HARD STOP this Playbook
+      ansible.builtin.meta: end_play
 
 
     - name: 0a - Read the Certificate from Vault, This Helps with ARI Check
