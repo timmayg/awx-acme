@@ -29,7 +29,6 @@
         is_new_cert: "{{ vault_cert.failed | default(false) }}"
 
 
-
     - block:
 
         - name: 0c - Get ARI renewal info
@@ -40,13 +39,13 @@
           register: ari_info
 
 
-        - name: 0c - Is the ARI Renewal Time Window Open
+        - name: 0d - Is the ARI Renewal Time Window Open
           ansible.builtin.set_fact:
             now_utc: "{{ ansible_date_time.iso8601 }}"
             allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
-        - name: 0d - Print ARI timing and renewal decision
+        - name: 0e - Print ARI timing and renewal decision
           ansible.builtin.debug:
             msg:
               - "Current time (UTC): {{ now_utc }}"
@@ -55,18 +54,13 @@
               - "Allow renewal:      {{ allow_renewal }}"
 
 
-        - name: 0e - Stop Running Tasks if Not in ARI Window 
+        - name: 0f - Stop Running Tasks if Not in ARI Window 
           ansible.builtin.meta: end_play
           when: not allow_renewal
 
       when:
         - not is_new_cert
         - vault_cert.data is defined
-
-
-#    - name: 0f - Print Keep on Going if in ARI Window
-#      ansible.builtin.meta: end_play
-#      when: not allow_renewal
 
 
     - name: 01 - Generate a Private Key for the FQDN
