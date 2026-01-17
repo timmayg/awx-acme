@@ -64,9 +64,9 @@
         - vault_cert.data is defined
 
 
-    - name: 0f - Print Keep on Going if in ARI Window
-      ansible.builtin.meta: end_play
-      when: not allow_renewal
+#    - name: 0f - Print Keep on Going if in ARI Window
+#      ansible.builtin.meta: end_play
+#      when: not allow_renewal
 
 
     - name: 01 - Generate a Private Key for the FQDN
