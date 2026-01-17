@@ -1,17 +1,16 @@
 ---
-- name: Create a Certificate using ACME and Store it in Vault
+- name: Create \ Renew a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: true
 
 # This is NOT a PROD file, 
-# This is part of the Github branch  
+# This is part of the Github branch  feature/acme-ari
 
   tasks:
 
     - name: Print the name of the FQDN
       ansible.builtin.debug:
         msg: "The fqdn for this certificate will be {{ fqdn }}."
-
 
 
     - name: 0a - Read the Certificate from Vault, This Helps with ARI Check
@@ -39,13 +38,13 @@
 
 
     - name: 0c - Is the ARI Renewal Time Window Open
-      set_fact:
+      ansbible.builtin.set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
         allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
     - name: 0d - Print ARI timing and renewal decision
-      debug:
+      ansbible.builtin.debug:
         msg:
           - "Current time (UTC): {{ now_utc }}"
           - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
@@ -54,10 +53,13 @@
 
 
     - name: 0e - Stop Running Tasks if Not in ARI Window 
-      meta: end_play
+      ansbible.builtin.meta: end_play
       when: not allow_renewal
 
 
+    - name: 0f - Print Keep on Going if in ARI Window
+      ansbible.builtin.meta: end_play
+      when: not allow_renewal
 
 
     - name: 01 - Generate a Private Key for the FQDN
