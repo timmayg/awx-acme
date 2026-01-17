@@ -28,21 +28,22 @@
       set_fact:
         is_new_cert: "{{ vault_cert.failed | default(false) }}"
 
+
+
     - block:
         - name: 0c - Get ARI renewal info
           community.crypto.acme_ari_info:
             acme_directory: "{{ acme_directory }}"
-            acme_version: 2
             certificate_content: "{{ vault_cert.data.data.cert }}"
           register: ari_info
 
         - name: 0d - Check ARI window
-          set_fact:
+          ansible.builtin.set_fact:
             allow_renewal: >-
               {{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}
 
         - name: 0e - Print ARI decision
-          debug:
+          ansible.builtin.debug:
             msg:
               - "Current time (UTC): {{ ansible_date_time.iso8601 }}"
               - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
@@ -50,10 +51,13 @@
               - "Allow renewal:      {{ allow_renewal }}"
 
         - name: 0f - Stop if not in ARI window
-          meta: end_play
+          ansible.builtin.meta: end_play
           when: not allow_renewal
 
-      when: not is_new_cert
+      when:
+        - not is_new_cert
+        - vault_cert.data is defined
+
 
 
     - name: 01 - Generate a Private Key for the FQDN
