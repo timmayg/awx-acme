@@ -3,10 +3,11 @@
   hosts: localhost
   gather_facts: true
 
-# This is NOT a PROD file, 
-# This is part of the Github branch  feature/acme-ari
-
   tasks:
+
+    - name: Print Github Debugging Info
+      ansible.builtin.debug:
+        msg: "This is NOT a PROD file, this is part of the Github branch  feature/acme-ari."
 
     - name: Print the name of the FQDN
       ansible.builtin.debug:
