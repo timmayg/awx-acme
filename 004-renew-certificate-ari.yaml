@@ -1,5 +1,5 @@
 ---
-- name: Create \ Renew a Certificate using ACME and Store it in Vault
+- name: Test Renewal Info About a Certificate
   hosts: localhost
   gather_facts: true
 
@@ -10,7 +10,7 @@
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
-    - name: 01 - Read existing certificate from Vault
+    - name: Read existing certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
@@ -24,39 +24,39 @@
 
 
 
-    - name: 02 - Retrieve renewal information for a certificate
+    - name: 01 - Retrieve renewal information for a certificate - acme_certificate_renewal_info
       community.crypto.acme_certificate_renewal_info:
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
         certificate_content: "{{ vault_cert.data.data.cert }}"
         use_ari: true
         # now: "{{ now_time }}"
-      register: cert_data
+      register: acme_certificate_renewal_info
 
 
-    - name: 03 - Should the certificate be renewed?
+    - name: 02 - Should the certificate be renewed?
       ansible.builtin.debug:
-        var: cert_data.should_renew
+        var: acme_certificate_renewal_info.should_renew
 
 
 
-    - name: 0c - Get ARI renewal info
+    - name: 11 - Get ARI renewal info - community.crypto.acme_ari_info
       community.crypto.acme_ari_info:
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
         certificate_content: "{{ vault_cert.data.data.cert }}"
-      register: ari_info
+      register: acme_ari_info
 
-    - name: 0d - Is the ARI Renewal Time Window Open
+    - name: 22 - Is the ARI Renewal Time Window Open
       ansible.builtin.set_fact:
         now_utc: "{{ ansible_date_time.iso8601 }}"
-        allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+        allow_renewal: "{{ ansible_date_time.iso8601 >= acme_ari_info.renewal_info.suggestedWindow.start }}"
 
 
-    - name: 0e - Print ARI timing and renewal decision
+    - name: 33 - Print ARI timing and renewal decision
       ansible.builtin.debug:
         msg:
           - "Current time (UTC): {{ now_utc }}"
-          - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
-          - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
+          - "ARI window start:   {{ acme_ari_info.renewal_info.suggestedWindow.start }}"
+          - "ARI window end:     {{ acme_ari_info.renewal_info.suggestedWindow.end }}"
           - "Allow renewal:      {{ allow_renewal }}"
