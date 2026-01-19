@@ -1,0 +1,27 @@
+---
+- name: Create \ Renew a Certificate using ACME and Store it in Vault
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+
+    - name: Print Github Debugging Info
+      ansible.builtin.debug:
+        msg: "This is NOT a PROD file, this is part of the Github branch  feature/acme-ari."
+
+    - name: Print the name of the FQDN
+      ansible.builtin.debug:
+        msg: "The fqdn for this certificate will be {{ fqdn }}."
+
+
+    - name: 0a - Attempt to read existing certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        version: "{{ vault_kv_version | default(omit) }}"        
+      register: vault_cert
+      failed_when: false
+      changed_when: false

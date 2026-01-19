@@ -170,7 +170,6 @@
         passphrase: "{{ pkcs12_passphrase }}"
         state: present
 
-
 #
 #  Can this be done natively
 #
@@ -187,6 +186,7 @@
       ansible.builtin.debug:
         msg: "{{ mounts['content'] | b64decode }}"
       when: mounts.content is defined
+
 
     - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
