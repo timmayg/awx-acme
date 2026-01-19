@@ -20,6 +20,7 @@
         auth_method: "{{ vault_auth_method }}"
         token: "{{ vault_token }}"
         engine_mount_point: "{{ vault_mount }}"
+        version: "{{ vault_kv_version | default(omit) }}"        
       register: vault_cert
       failed_when: false
       changed_when: false
