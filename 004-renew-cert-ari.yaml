@@ -10,7 +10,7 @@
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
-    - name: 01 - Attempt to read existing certificate from Vault
+    - name: 01 - Read existing certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
@@ -24,6 +24,8 @@
 
     - name: 02 - Retrieve renewal information for a certificate
       community.crypto.acme_certificate_renewal_info:
+        acme_directory: "{{ acme_directory }}"
+        acme_version: 2
         certificate_content: "{{ vault_cert.data.data.cert }}"
       register: cert_data
 
