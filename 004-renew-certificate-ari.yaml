@@ -1,0 +1,35 @@
+---
+- name: Create \ Renew a Certificate using ACME and Store it in Vault
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+
+    - name: Print the name of the FQDN
+      ansible.builtin.debug:
+        msg: "The fqdn for this certificate will be {{ fqdn }}."
+
+
+    - name: 0a - Attempt to read existing certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+      register: vault_cert
+      failed_when: false
+      changed_when: false
+
+
+    - name: Retrieve renewal information for a certificate
+      community.crypto.acme_certificate_renewal_info:
+        certificate_content: "{{ vault_cert.data.data.cert }}"
+      register: cert_data
+
+    - name: Should the certificate be renewed?
+      ansible.builtin.debug:
+        var: cert_data.should_renew
+
+
+
