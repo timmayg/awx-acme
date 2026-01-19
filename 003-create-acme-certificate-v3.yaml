@@ -27,6 +27,7 @@
       failed_when: false
       changed_when: false
 
+
     - name: 0b - Determine if this is a new certificate
       set_fact:
         is_new_cert: "{{ vault_cert.failed | default(false) }}"
@@ -57,9 +58,9 @@
               - "Allow renewal:      {{ allow_renewal }}"
 
 
-        - name: 0f - Stop Running Tasks if Not in ARI Window 
-          ansible.builtin.meta: end_play
-          when: not allow_renewal
+#        - name: 0f - Stop Running Tasks if Not in ARI Window 
+#          ansible.builtin.meta: end_play
+#          when: not allow_renewal
 
       when:
         - not is_new_cert
