@@ -24,12 +24,13 @@
 
 
 
-    - name: 01 - Retrieve renewal information for a certificate - acme_certificate_renewal_info
+    - name: 01 - Retrieve renewal information for a certificate - community.crypto.acme_certificate_renewal_info
       community.crypto.acme_certificate_renewal_info:
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
         certificate_content: "{{ vault_cert.data.data.cert }}"
         use_ari: true
+        remaining_days: "{{ remaining_days | default(omit) }}"
         # now: "{{ now_time }}"
       register: acme_certificate_renewal_info
 
