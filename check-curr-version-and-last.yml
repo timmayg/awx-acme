@@ -25,3 +25,31 @@
       register: vault_cert
       failed_when: false
       changed_when: false
+
+
+    - name: Set certificate metadata version
+      ansible.builtin.set_fact:
+        cert_metadata_version: "{{ vault_cert.raw.data.metadata.version }}"
+
+    # That guarantees the playbook won’t blow up if:
+    #  the secret is new
+    #  the path doesn’t exist
+    #  metadata is missing
+
+    - name: Set certificate metadata version (safe)
+      ansible.builtin.set_fact:
+        cert_metadata_version: "{{ vault_cert.raw.data.metadata.version | default(0) }}"
+
+
+
+    - name: Set previous certificate metadata version
+      ansible.builtin.set_fact:
+        previous_cert_metadata_version: "{{ cert_metadata_version | int - 1 }}"
+
+    # This assures we will nevr end up with -1 on a brand-new secret
+
+    - name: Set previous certificate metadata version (safe)
+      ansible.builtin.set_fact:
+        previous_cert_metadata_version: >-
+          {{ (cert_metadata_version | int - 1) if (cert_metadata_version | int) > 0 else 0 }}
+
