@@ -10,11 +10,6 @@
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
-    - name: Print the name of the FQDN
-      ansible.builtin.debug:
-        msg: "The fqdn for this certificate will be {{ fqdn }}."
-
-
     - name: 01 - Read existing certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ fqdn }}"
