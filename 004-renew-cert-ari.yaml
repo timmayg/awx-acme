@@ -27,6 +27,7 @@
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
         certificate_content: "{{ vault_cert.data.data.cert }}"
+        use_ari: true
         # now: "{{ now_time }}"
       register: cert_data
 
