@@ -98,8 +98,6 @@
         fullchain: "{{ fqdn }}.fullchain }}"
         challenge: dns-01
         include_renewal_cert_id: when_ari_supported 
-        # Renew if the certificate is at least 30 days old
-        # remaining_days: 60
         profile: "{{ acme_profile }}"  # tlsserver, classic (certs same as always), shortlived (6 day cert life)
       register: challenge_response
 
@@ -141,18 +139,8 @@
         fullchain: "{{ fqdn }}.fullchain"
         challenge: dns-01
         include_renewal_cert_id: when_ari_supported 
-        # Renew if the certificate is at least 30 days old
-        # remaining_days: 60
         data: "{{ challenge_response }}"
       register: certificate_response
-
-
-    - name: 08a - Get ARI renewal info
-      community.crypto.acme_ari_info:
-        acme_directory: "{{ acme_directory }}"
-        acme_version: 2
-        certificate_path: "{{ fqdn }}.cer"
-      register: ari_info
 
 
     - name: 09 - Delete DNS TXT record after validation
@@ -186,6 +174,16 @@
     - name: 11 - Encode the PKCS12 file to base64 Text
       ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
+    - name: 11a - Consime the PKCS12 file for testing
+      ansible.builtin.slurp:
+        src: pkcs12_file.bin.p12
+      register: mounts
+      failed_when: false
+
+    - name: 11b - Print pkcs file in base64
+      ansible.builtin.debug:
+        msg: "{{ mounts['content'] | b64decode }}"
+      when: mounts.content is defined
 
     - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
