@@ -1,0 +1,81 @@
+---
+- name: Pull a Cert \ Full Chain and Private Key from Vault, then PKCS12 it
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+
+    - name: Print the name of the FQDN
+      ansible.builtin.debug:
+        msg: "The fqdn for this certificate will be {{ fqdn }}."
+
+
+    - name: 01 - Attempt to read existing certificate from Vault
+      community.hashi_vault.vault_kv2_get:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        version: "{{ vault_kv_version | default(omit) }}"        
+      register: vault_cert
+      failed_when: false
+      changed_when: false
+
+
+    - name: 02 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+      community.crypto.openssl_pkcs12:
+        action: export
+        friendly_name: "{{ fqdn }}"
+        privatekey_path: "{{ fqdn }}.key"
+        certificate_path: "{{ fqdn }}.fullchain"
+        path: pkcs12_file.bin.p12
+        passphrase: "{{ pkcs12_passphrase }}"
+        state: present
+
+
+    - name: 02a - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "file pkcs12_file.bin.p12"
+
+
+    - name: 03 - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
+
+    - name: 03a - Encode the PKCS12 file to base64 Text
+      ansible.builtin.command: "file pkcs12_file.p12.txt"
+
+
+
+    - name: 11a - Consime the PKCS12 file for testing
+      ansible.builtin.slurp:
+        src: pkcs12_file.bin.p12
+      register: mounts
+      failed_when: false
+
+    - name: 11b - Print pkcs file in base64
+      ansible.builtin.debug:
+        msg: "{{ mounts['content'] | b64decode }}"
+      when: mounts.content is defined
+
+
+
+    - name: 12 - Write the New Certificate to Vault
+      community.hashi_vault.vault_kv2_write:
+        path: "{{ fqdn }}"
+        url: "{{ vault_url }}"
+        auth_method: "{{ vault_auth_method }}"
+        token: "{{ vault_token }}"
+        engine_mount_point: "{{ vault_mount }}"
+        data:
+          public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
+          private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
+          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
+          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
+          fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
+          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
+          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+
+
+
+
+
