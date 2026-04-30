@@ -89,6 +89,15 @@
         subject_alt_name: "{{ sans | default(omit) }}"
 
 
+    - name: DEBUG - Check community.crypto version
+      ansible.builtin.command: ansible-galaxy collection list community.crypto
+      register: crypto_version
+
+    - name: DEBUG - Print collection version
+      ansible.builtin.debug:
+        msg: "{{ crypto_version.stdout }}"
+
+
     - name: 04 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
