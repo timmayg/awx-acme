@@ -54,6 +54,22 @@
             allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
+        - name: 0d-debug - Force ARI renewal for testing
+          ansible.builtin.set_fact:
+            allow_renewal: true
+          when:
+            - force_allow_renewal is defined
+            - force_allow_renewal | bool
+
+
+        - name: 0d-debug - Print override warning
+          ansible.builtin.debug:
+            msg: "WARNING: force_allow_renewal override is ENABLED"
+          when:
+            - force_allow_renewal is defined
+            - force_allow_renewal | bool
+
+
         - name: 0e - Print ARI timing and renewal decision
           ansible.builtin.debug:
             msg:
