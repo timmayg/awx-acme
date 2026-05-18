@@ -43,10 +43,15 @@
           register: ari_info
 
 
+#        - name: 0d - Is the ARI Renewal Time Window Open
+#          ansible.builtin.set_fact:
+#            now_utc: "{{ ansible_date_time.iso8601 }}"
+#            allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+
         - name: 0d - Is the ARI Renewal Time Window Open
           ansible.builtin.set_fact:
-            now_utc: "{{ ansible_date_time.iso8601 }}"
-            allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+            now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
+            allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
 
 
         - name: 0e - Print ARI timing and renewal decision
