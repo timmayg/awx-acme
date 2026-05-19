@@ -28,9 +28,9 @@
       changed_when: false
 
 
-    - name: 0b - Determine if this is a new certificate
+    - name: 0b - Does Vault have a Certitificate for this FQDN
       set_fact:
-        is_new_cert: "{{ vault_cert.failed | default(false) }}"
+        is_new_cert: "{{ vault_cert.data is not defined }}"
 
 
     - block:
@@ -206,21 +206,21 @@
         state: present
 
 #
-#  Can this be done natively
+#  Can PKCS12 stuff be done natively
 #
     - name: 11 - Encode the PKCS12 file to base64 Text
       ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
-    - name: 11a - Consime the PKCS12 file for testing
+    - name: 11a - Consume the PKCS12 file for testing
       ansible.builtin.slurp:
         src: pkcs12_file.bin.p12
-      register: mounts
-      failed_when: false
+      register: pkcs12_file
+
 
     - name: 11b - Print pkcs file in base64
       ansible.builtin.debug:
-        msg: "{{ mounts['content'] | b64decode }}"
-      when: mounts.content is defined
+        msg: "{{ pkcs12_file['content'] | b64decode }}"
+      when: pkcs12_file.content is defined
 
 
 #    - name: 12 - OLDWAY - Write the New Certificate to Vault
@@ -253,8 +253,7 @@
           cert: "{{ lookup('file', fqdn ~ '.cer') }}"
           chain: "{{ lookup('file', fqdn ~ '.chain') }}"
           fullchain: "{{ lookup('file', fqdn ~ '.fullchain') }}"
-#          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
-#          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+          p12_in_base64: "{{ pkcs12_file.content }}"
 
 
     - name: 13 - Get certificate information
