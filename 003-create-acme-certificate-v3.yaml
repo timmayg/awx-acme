@@ -53,7 +53,10 @@
             now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
             allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
 
-
+#
+# When enabled, these 2 debugging tasks will overwrite the ARI Allow Renewal flag
+# and assure that a new certificate is issued. 
+#
         - name: 0d-debug - Force ARI renewal for testing
           ansible.builtin.set_fact:
             allow_renewal: true
@@ -218,6 +221,23 @@
       when: mounts.content is defined
 
 
+#    - name: 12 - OLDWAY - Write the New Certificate to Vault
+#      community.hashi_vault.vault_kv2_write:
+#        path: "{{ fqdn }}"
+#        url: "{{ vault_url }}"
+#        auth_method: "{{ vault_auth_method }}"
+#        token: "{{ vault_token }}"
+#        engine_mount_point: "{{ vault_mount }}"
+#        data:
+#          public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
+#          private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
+#          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
+#          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
+#          fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
+#          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
+#          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+
+
     - name: 12 - Write the New Certificate to Vault
       community.hashi_vault.vault_kv2_write:
         path: "{{ fqdn }}"
@@ -226,11 +246,11 @@
         token: "{{ vault_token }}"
         engine_mount_point: "{{ vault_mount }}"
         data:
-          public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
-          private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
-          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
-          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
-          fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
+          public_key: "{{ lookup('file', fqdn ~ '.pub') }}"
+          private_key: "{{ lookup('file', fqdn ~ '.key') }}"
+          cert: "{{ lookup('file', fqdn ~.'cer') }}"
+          chain: "{{ lookup('file', fqdn ~.'chain') }}"
+          fullchain: "{{ lookup('file', fqdn ~.'fullchain') }}"
           p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
           p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
 
