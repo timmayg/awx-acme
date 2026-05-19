@@ -72,20 +72,20 @@
 # When enabled, these 2 debugging tasks will overwrite the ARI Allow Renewal flag
 # and assure that a new certificate is issued. 
 #
-        - name: 0d-debug - Force ARI renewal for testing
+        - name: DEBUG - Force ARI renewal for testing
           ansible.builtin.set_fact:
             allow_renewal: true
           when:
-            - force_allow_renewal is defined
             - force_allow_renewal | bool
+            - debug_mode | default(false) | bool
 
 
-        - name: 0d-debug - Print override warning
+        - name: DEBUG - Print override warning
           ansible.builtin.debug:
             msg: "WARNING: force_allow_renewal override is ENABLED"
           when:
-            - force_allow_renewal is defined
             - force_allow_renewal | bool
+            - debug_mode | default(false) | bool
 
 
         - name: 0e - Print ARI timing and renewal decision
