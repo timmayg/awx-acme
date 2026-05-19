@@ -4,7 +4,7 @@
   gather_facts: true
 
 #
-# add debug_mode: true to AAP Template to enable Debug
+# add debug_mode: true to AAP Template to enable Debug Mode
 #   if debug_mode: true is not present assume debug_mode: false 
 
   tasks:
@@ -49,23 +49,11 @@
           register: ari_info
 
 
-# v1     - name: 0d - Is the ARI Renewal Time Window Open
-#          ansible.builtin.set_fact:
-#            now_utc: "{{ ansible_date_time.iso8601 }}"
-#            allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
-#
-# v2     - name: 0d - Is the ARI Renewal Time Window Open
-#          ansible.builtin.set_fact:
-#            now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
-#            allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
-#
-
         - name: 0d - Determine ARI renewal eligibility
           ansible.builtin.set_fact:
             now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
             allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
             inside_ari_window: "{{ ansible_facts['date_time']['iso8601'] <= ari_info.renewal_info.suggestedWindow.end }}"
-
 
 
 #
@@ -94,7 +82,6 @@
               - "Current time (UTC): {{ now_utc }}"
               - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
               - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
-              - "Inside ARI window:  {{ inside_ari_window }}"
               - "Allow renewal:      {{ allow_renewal }}"
 
 
@@ -201,6 +188,21 @@
       register: certificate_response
 
 
+#
+#    - name: 09 - Delete DNS TXT record after validation
+#      community.general.cloudflare_dns:
+#        api_token: "{{ cloudflare_api_key }}"
+#        record: "{{ item.value['dns-01']['record'] }}"
+#        type: TXT
+#        state: absent
+#        zone: "{{ zone }}"
+#      loop: "{{ challenge_response.challenge_data | dict2items | selectattr('value.dns-01', 'defined') | list }}"
+#      loop_control:
+#        label: "{{ item.value['dns-01']['record'] }}"
+#      register: cloudflare_dns_delete
+#      ignore_errors: true
+#
+
     - name: 09 - Delete DNS TXT record after validation
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
@@ -212,7 +214,15 @@
       loop_control:
         label: "{{ item.value['dns-01']['record'] }}"
       register: cloudflare_dns_delete
-      ignore_errors: true
+      failed_when: false
+
+
+    - name: 09a - Report Cloudflare DNS cleanup issues
+      ansible.builtin.debug:
+        msg: "{{ cloudflare_dns_delete }}"
+      when:
+        - cloudflare_dns_delete is defined
+        - cloudflare_dns_delete.failed | default(false)
 
 
     - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
@@ -237,27 +247,12 @@
       register: pkcs12_file
 
 
-    - name: 11b - Print pkcs file in base64, this may produce warnings due to characters
+    - name: DEBUG - Print pkcs file in base64, this may produce warnings due to characters
       ansible.builtin.debug:
         msg: "{{ pkcs12_file['content'] | b64decode }}"
-      when: pkcs12_file.content is defined
-
-
-#    - name: 12 - OLDWAY - Write the New Certificate to Vault
-#      community.hashi_vault.vault_kv2_write:
-#        path: "{{ fqdn }}"
-#        url: "{{ vault_url }}"
-#        auth_method: "{{ vault_auth_method }}"
-#        token: "{{ vault_token }}"
-#        engine_mount_point: "{{ vault_mount }}"
-#        data:
-#          public_key: "{{ lookup('file', '{{ fqdn }}.pub') }}"
-#          private_key: "{{ lookup('file', '{{ fqdn }}.key') }}"
-#          cert: "{{ lookup('file', '{{ fqdn }}.cer') }}"
-#          chain: "{{ lookup('file', '{{ fqdn }}.chain') }}"
-#          fullchain: "{{ lookup('file', '{{ fqdn }}.fullchain') }}"
-#          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
-#          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
+      when: 
+        - pkcs12_file.content is defined
+        - debug_mode | default(false) | bool
 
 
     - name: 12 - Write Certificate and Artifacts to Vault
@@ -281,8 +276,6 @@
         path: "{{ fqdn }}.cer"
       register: cert_info
 
-# This line was moved out of the Certificate Details section
-# - **Subject Common Name:** `{{ cert_info.subject.commonName }}`
 
     - name: 14 - Send a Webex Message with the Certificate Information to Tims AWX Space
       community.general.cisco_webex:
