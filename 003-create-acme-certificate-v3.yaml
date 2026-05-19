@@ -3,11 +3,17 @@
   hosts: localhost
   gather_facts: true
 
+#
+# add debug_mode: true to AAP Template to enable Debug
+#   if debug_mode: true is not present assume debug_mode: false 
+
   tasks:
 
-    - name: Print Github Debugging Info
+    - name: DEBUG - Print Github Debugging Info
       ansible.builtin.debug:
         msg: "This is NOT a PROD file, this is part of the Github branch  feature/acme-ari."
+      when:
+        - debug_mode | default(false) | bool
 
 
     - name: Print the name of the FQDN
@@ -88,7 +94,7 @@
               - "Current time (UTC): {{ now_utc }}"
               - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
               - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
-              - "Inside ARI window:      {{ inside_ari_window }}"
+              - "Inside ARI window:  {{ inside_ari_window }}"
               - "Allow renewal:      {{ allow_renewal }}"
 
 
@@ -126,10 +132,14 @@
     - name: DEBUG - Check community.crypto version
       ansible.builtin.command: ansible-galaxy collection list community.crypto
       register: crypto_version
+      when:
+        - debug_mode | default(false) | bool
 
     - name: DEBUG - Print collection version
       ansible.builtin.debug:
         msg: "{{ crypto_version.stdout }}"
+      when:
+        - debug_mode | default(false) | bool
 
 #
 # Task 04 needs attention.   Warnings on run sugguest that a different module should be used. 
@@ -175,7 +185,7 @@
       when: pending_challenges | length > 0
 
 
-    - name: 08 - Validated the ACME Challenge, on Success Retrieve the Certificate
+    - name: 08 - Validate the ACME Challenge, on Success Retrieve the Certificate
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
         account_key_content: "{{ acme_key }}"
@@ -227,7 +237,7 @@
       register: pkcs12_file
 
 
-    - name: 11b - Print pkcs file in base64
+    - name: 11b - Print pkcs file in base64, this may produce warnings due to characters
       ansible.builtin.debug:
         msg: "{{ pkcs12_file['content'] | b64decode }}"
       when: pkcs12_file.content is defined
@@ -250,7 +260,7 @@
 #          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
 
 
-    - name: 12 - Write the New Certificate to Vault
+    - name: 12 - Write Certificate and Artifacts to Vault
       community.hashi_vault.vault_kv2_write:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
