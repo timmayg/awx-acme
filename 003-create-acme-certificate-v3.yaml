@@ -43,15 +43,24 @@
           register: ari_info
 
 
-#        - name: 0d - Is the ARI Renewal Time Window Open
+# v1     - name: 0d - Is the ARI Renewal Time Window Open
 #          ansible.builtin.set_fact:
 #            now_utc: "{{ ansible_date_time.iso8601 }}"
 #            allow_renewal: "{{ ansible_date_time.iso8601 >= ari_info.renewal_info.suggestedWindow.start }}"
+#
+# v2     - name: 0d - Is the ARI Renewal Time Window Open
+#          ansible.builtin.set_fact:
+#            now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
+#            allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
+#
 
-        - name: 0d - Is the ARI Renewal Time Window Open
+        - name: 0d - Determine ARI renewal eligibility
           ansible.builtin.set_fact:
             now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
             allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
+            inside_ari_window: "{{ ansible_facts['date_time']['iso8601'] <= ari_info.renewal_info.suggestedWindow.end }}"
+
+
 
 #
 # When enabled, these 2 debugging tasks will overwrite the ARI Allow Renewal flag
@@ -79,6 +88,7 @@
               - "Current time (UTC): {{ now_utc }}"
               - "ARI window start:   {{ ari_info.renewal_info.suggestedWindow.start }}"
               - "ARI window end:     {{ ari_info.renewal_info.suggestedWindow.end }}"
+              - "Inside ARI window:      {{ inside_ari_window }}"
               - "Allow renewal:      {{ allow_renewal }}"
 
 
@@ -165,7 +175,7 @@
       when: pending_challenges | length > 0
 
 
-    - name: 08 - Let the ACME Challenge be Validated and retrieve the cert and intermediate certificate
+    - name: 08 - Validated the ACME Challenge, on Success Retrieve the Certificate
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
         account_key_content: "{{ acme_key }}"
