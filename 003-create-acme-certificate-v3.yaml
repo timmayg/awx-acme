@@ -121,7 +121,9 @@
       ansible.builtin.debug:
         msg: "{{ crypto_version.stdout }}"
 
-
+#
+# Task 04 needs attention.   Warnings on run sugguest that a different module should be used. 
+#
     - name: 04 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
@@ -248,9 +250,9 @@
         data:
           public_key: "{{ lookup('file', fqdn ~ '.pub') }}"
           private_key: "{{ lookup('file', fqdn ~ '.key') }}"
-          cert: "{{ lookup('file', fqdn ~ .'cer') }}"
-          chain: "{{ lookup('file', fqdn ~ .'chain') }}"
-          fullchain: "{{ lookup('file', fqdn ~ .'fullchain') }}"
+          cert: "{{ lookup('file', fqdn ~ '.cer') }}"
+          chain: "{{ lookup('file', fqdn ~ '.chain') }}"
+          fullchain: "{{ lookup('file', fqdn ~ '.fullchain') }}"
 #          p12_in_binary: "{{ lookup('file', 'pkcs12_file.bin.p12') }}"
 #          p12_in_base64: "{{ lookup('file', 'pkcs12_file.p12.txt') }}"
 
