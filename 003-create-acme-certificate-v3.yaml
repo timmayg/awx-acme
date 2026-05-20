@@ -2,9 +2,8 @@
 - name: Create \ Renew a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: true
-  vars:
-    debug_mode: false
-
+  # vars:
+  #  debug_mode: false
 #
 # add debug_mode: true to AAP Template to enable Debug Mode
 #   if debug_mode: true is not present assume debug_mode: false 
