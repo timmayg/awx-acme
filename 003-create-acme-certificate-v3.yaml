@@ -66,7 +66,7 @@
           ansible.builtin.set_fact:
             allow_renewal: true
           when:
-            - force_allow_renewal | bool
+            - force_allow_renewal | default(false) | bool
             - debug_mode | default(false) | bool
 
 
@@ -74,7 +74,7 @@
           ansible.builtin.debug:
             msg: "WARNING: force_allow_renewal override is ENABLED"
           when:
-            - force_allow_renewal | bool
+            - force_allow_renewal | default(false) | bool
             - debug_mode | default(false) | bool
 
 
