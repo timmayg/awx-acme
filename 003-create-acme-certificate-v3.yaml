@@ -34,14 +34,14 @@
       changed_when: false
 
 
-    - name: 0b - Does Vault have a Certitificate for this FQDN
+    - name: 02 - Does Vault have a Certitificate for this FQDN
       set_fact:
         is_new_cert: "{{ vault_cert.data is not defined }}"
 
 
     - block:
 
-        - name: 0c - Get ARI renewal info
+        - name: 02a - Get ARI renewal info
           community.crypto.acme_ari_info:
             acme_directory: "{{ acme_directory }}"
             acme_version: 2
@@ -49,7 +49,7 @@
           register: ari_info
 
 
-        - name: 0d - Determine ARI renewal eligibility
+        - name: 02b - Determine ARI renewal eligibility
           ansible.builtin.set_fact:
             now_utc: "{{ ansible_facts['date_time']['iso8601'] }}"
             allow_renewal: "{{ ansible_facts['date_time']['iso8601'] >= ari_info.renewal_info.suggestedWindow.start }}"
@@ -76,7 +76,7 @@
             - debug_mode | default(false) | bool
 
 
-        - name: 0e - Print ARI timing and renewal decision
+        - name: 02c - Print ARI timing and renewal decision
           ansible.builtin.debug:
             msg:
               - "Current time (UTC): {{ now_utc }}"
@@ -85,7 +85,7 @@
               - "Allow renewal:      {{ allow_renewal }}"
 
 
-        - name: 0f - Stop Running Tasks if Not in ARI Window 
+        - name: 02d - Stop Running Tasks if Not in ARI Window 
           ansible.builtin.meta: end_play
           when: not allow_renewal
 
@@ -94,7 +94,7 @@
         - vault_cert.data is defined
 
 
-    - name: 01 - Generate a Private Key for the FQDN
+    - name: 03 - Generate a Private Key for the FQDN
       community.crypto.openssl_privatekey:
         type: "{{ key_type }}"
         curve: "{{ 'secp384r1' if key_type == 'ECC' else omit }}"
@@ -102,13 +102,13 @@
         path: "{{ fqdn }}.key"
 
 
-    - name: 02 - Generate an OpenSSL public key in PEM format
+    - name: 04 - Generate an OpenSSL public key in PEM format
       community.crypto.openssl_publickey:
         path: "{{ fqdn }}.pub"
         privatekey_path: "{{ fqdn }}.key"
 
 
-    - name: 03 - Generate an OpenSSL Certificate Signing Request
+    - name: 05 - Generate an OpenSSL Certificate Signing Request
       community.crypto.openssl_csr:
         path: "{{ fqdn }}.csr"
         privatekey_path: "{{ fqdn }}.key"
@@ -129,9 +129,9 @@
         - debug_mode | default(false) | bool
 
 #
-# Task 04 needs attention.   Warnings on run sugguest that a different module should be used. 
+# Task 06 needs attention.   Warnings on run sugguest that a different module should be used. 
 #
-    - name: 04 - Create the initial ACME Challenge
+    - name: 06 - Create the initial ACME Challenge
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
         account_key_content: "{{ acme_key }}"
@@ -148,12 +148,12 @@
       register: challenge_response
 
 
-    - name: 05 - Extract pending DNS-01 challenges
+    - name: 07 - Extract pending DNS-01 challenges
       ansible.builtin.set_fact:
         pending_challenges: "{{ challenge_response.authorizations | default({}) | dict2items | selectattr('value.status', 'equalto', 'pending') | list }}"
 
 
-    - name: 06 - Create DNS TXT record with DNS-01 Challenge Text
+    - name: 08 - Create DNS TXT record with DNS-01 Challenge Text
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
         record: "{{ item.value['dns-01']['record'] }}"
@@ -167,13 +167,13 @@
       register: cloudflare_dns_create
 
 
-    - name: 07 - Pause the Playbook for 20 seconds if there are pending DNS-01 challenges
+    - name: 09 - Pause the Playbook for 20 seconds if there are pending DNS-01 challenges
       ansible.builtin.pause:
         seconds: 20
       when: pending_challenges | length > 0
 
 
-    - name: 08 - Validate the ACME Challenge, on Success Retrieve the Certificate
+    - name: 10 - Validate the ACME Challenge, on Success Retrieve the Certificate
       community.crypto.acme_certificate:
         account_email: "{{ acme_contact }}"
         account_key_content: "{{ acme_key }}"
@@ -205,7 +205,7 @@
 #      ignore_errors: true
 #
 
-    - name: 09 - Delete DNS TXT record after validation
+    - name: 10 - Delete DNS TXT record after validation
       community.general.cloudflare_dns:
         api_token: "{{ cloudflare_api_key }}"
         record: "{{ item.value['dns-01']['record'] }}"
@@ -219,7 +219,7 @@
       failed_when: false
 
 
-    - name: 09a - Report Cloudflare DNS cleanup issues
+    - name: 10a - Report Cloudflare DNS cleanup issues
       ansible.builtin.debug:
         msg: "{{ cloudflare_dns_delete }}"
       when:
@@ -227,7 +227,7 @@
         - cloudflare_dns_delete.failed | default(false)
 
 
-    - name: 10 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
+    - name: 11 - Create the binary PKCS12 File using Community Crypto OpenSSL_Pkcs12
       community.crypto.openssl_pkcs12:
         action: export
         friendly_name: "{{ fqdn }}"
@@ -240,10 +240,10 @@
 #
 #  Can PKCS12 stuff be done natively
 #
-    - name: 11 - Encode the PKCS12 file to base64 Text
+    - name: 12 - Encode the PKCS12 file to base64 Text
       ansible.builtin.command: "openssl base64 -in pkcs12_file.bin.p12 -out pkcs12_file.p12.txt"
 
-    - name: 11a - Consume the PKCS12 file for testing
+    - name: 13 - Consume the PKCS12 file for testing
       ansible.builtin.slurp:
         src: pkcs12_file.bin.p12
       register: pkcs12_file
@@ -257,7 +257,7 @@
         - debug_mode | default(false) | bool
 
 
-    - name: 12 - Write Certificate and Artifacts to Vault
+    - name: 14 - Write Certificate and Artifacts to Vault
       community.hashi_vault.vault_kv2_write:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
@@ -273,13 +273,13 @@
           p12_in_base64: "{{ pkcs12_file.content }}"
 
 
-    - name: 13 - Get certificate information
+    - name: 15 - Get certificate information
       community.crypto.x509_certificate_info:
         path: "{{ fqdn }}.cer"
       register: cert_info
 
 
-    - name: 14 - Send a Webex Message with the Certificate Information to Tims AWX Space
+    - name: 16 - Send a Webex Message with the Certificate Information to Tims AWX Space
       community.general.cisco_webex:
         recipient_type: roomId
         recipient_id: "{{ recipient_id }}"
@@ -316,5 +316,5 @@
           ⏳ *This report was automatically generated by your AWX automation at the exact time shown above.*
 
 
-    - name: DEBUG - Timmay HARD STOP this Playbook
-      ansible.builtin.meta: end_play
+#    - name: DEBUG - Timmay HARD STOP this Playbook
+#      ansible.builtin.meta: end_play
