@@ -2,8 +2,7 @@
 - name: Create \ Renew a Certificate using ACME and Store it in Vault
   hosts: localhost
   gather_facts: true
-  # vars:
-  #  debug_mode: false
+
 #
 # add debug_mode: true to AAP Template to enable Debug Mode
 #   if debug_mode: true is not present assume debug_mode: false 
@@ -22,7 +21,7 @@
         msg: "The fqdn for this certificate will be {{ fqdn }}."
 
 
-    - name: 0a - Attempt to read existing certificate from Vault
+    - name: 01 - Attempt to read existing certificate from Vault
       community.hashi_vault.vault_kv2_get:
         path: "{{ fqdn }}"
         url: "{{ vault_url }}"
