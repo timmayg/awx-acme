@@ -139,6 +139,7 @@
         account_key_content: "{{ acme_key }}"
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
+        modify_account: false
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
@@ -180,6 +181,7 @@
         account_key_content: "{{ acme_key }}"
         acme_directory: "{{ acme_directory }}"
         acme_version: 2
+        modify_account: false
         csr: "{{ fqdn }}.csr"
         cert: "{{ fqdn }}.cer"
         chain: "{{ fqdn }}.chain"
