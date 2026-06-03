@@ -85,7 +85,7 @@
               - "Allow renewal:      {{ allow_renewal }}"
 
 
-        - name: 02d - Stop Running Tasks if Not in ARI Window 
+        - name: 02d - Not in ARI Window - Stop Running Tasks
           ansible.builtin.meta: end_play
           when: not allow_renewal
 
